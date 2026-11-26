@@ -160,6 +160,9 @@ npm run tauri:build:exe            # desktop app: app\src-tauri\target\release\P
 npm run tauri:installer            # or build the Windows installer (engine + CUDA runtime included) -> src-tauri\target\release\bundle\nsis\
 ```
 
+> **To start PAIZ from a source checkout, run `PAIZ.bat`** (double-click it, at the root of the repository). If you used the
+> installer instead, start PAIZ from the Start menu or the desktop shortcut.
+
 ### Headless (no window) — for OpenCode or any OpenAI-compatible client
 
 ```powershell

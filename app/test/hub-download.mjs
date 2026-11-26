@@ -40,3 +40,20 @@ assert.throws(() => startDownload(db, { id: 'ggml-org/tiny-llamas', files: g.par
 assert.throws(() => startDownload(db, { id: 'ggml-org/tiny-llamas', files: g.parts, toDir: 'C:\\', folder: 'x' }), /racine/);
 console.log('  ✔ téléchargement vers un dossier au choix (hors écurie), lieux interdits refusés');
 fs.rmSync(other, { recursive: true, force: true });
+
+// taille annoncée par l'appelant APPROXIMATIVE (comme l'assistant de démarrage) : le serveur fait foi
+const approx = g.parts.map((p) => ({ ...p, size: p.size + 5000 }));
+const job3 = startDownload(db, { id: 'ggml-org/tiny-llamas', files: approx, toRoot: 'store', folder: 'hub-approx' });
+let j3; for (let i = 0; i < 300; i++) { j3 = getJob(job3.id); if (j3.status !== 'running') break; await new Promise((r) => setTimeout(r, 100)); }
+assert.equal(j3.status, 'done', j3.error);
+assert.equal(fs.statSync(path.join(store, 'hub-approx', 'stories260K.gguf')).size, f.size);
+console.log('  ✔ téléchargement : taille approximative donnée par l\'appelant acceptée (la taille du serveur fait foi)');
+
+// reprise d'un partiel DÉJÀ COMPLET (HTTP 416) : fini sans être tronqué ni re-téléchargé
+fs.mkdirSync(path.join(store, 'hub-resume'));
+fs.copyFileSync(path.join(store, 'hub-test', 'stories260K.gguf'), path.join(store, 'hub-resume', 'stories260K.gguf.part'));
+const job4 = startDownload(db, { id: 'ggml-org/tiny-llamas', files: g.parts, toRoot: 'store', folder: 'hub-resume' });
+let j4; for (let i = 0; i < 300; i++) { j4 = getJob(job4.id); if (j4.status !== 'running') break; await new Promise((r) => setTimeout(r, 100)); }
+assert.equal(j4.status, 'done', j4.error);
+assert.equal(fs.statSync(path.join(store, 'hub-resume', 'stories260K.gguf')).size, f.size, 'le partiel complet n\'est pas tronqué');
+console.log('  ✔ téléchargement : partiel déjà complet (416) terminé sans perte');

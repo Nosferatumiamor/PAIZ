@@ -130,15 +130,17 @@ export function startDownload(db, { id, files, toRoot, toDir, folder }) {
       const url = `${HF}/${id}/resolve/main/${f.path.split('/').map(encodeURIComponent).join('/')}`;
       const res = await fetch(url, { headers: { ...UA, ...(f.have ? { Range: `bytes=${f.have}-` } : {}) }, redirect: 'follow' });
       if (res.status === 416 && f.have) { // « plage non satisfaisable » : si le partiel a déjà la taille complète annoncée, il est fini
-        const m = /\/(\d+)\s*$/.exec(res.headers.get('content-range') || '');
-        if (m && Number(m[1]) === f.have) { f.expected = f.have; await res.body?.cancel?.().catch(() => {}); } else throw new Error('Téléchargement refusé : HTTP 416');
+        // le 416 de Hugging Face ne porte pas de Content-Range : la taille complète vient d'une requête HEAD (qui suit la redirection)
+        const head = await fetch(url, { method: 'HEAD', headers: UA, redirect: 'follow' }).catch(() => null);
+        const total = Number(head?.headers.get('content-length')) || Number(head?.headers.get('x-linked-size')) || 0;
+        if (total && total === f.have) f.expected = f.have; else throw new Error('Téléchargement refusé : HTTP 416 (le fichier partiel ne correspond pas à la taille annoncée : supprime-le et relance).');
       } else if (!(res.status === 200 || res.status === 206)) throw new Error(`Téléchargement refusé : HTTP ${res.status}`);
       if (res.status === 200 && f.have) { done -= f.have; f.have = 0; } // le serveur ne reprend pas : on repart de zéro pour ce fichier
       if (res.status !== 416) { // taille attendue = celle annoncée par le serveur (celle de l'appelant peut être approximative)
         const len = Number(res.headers.get('content-length')) || 0;
         if (len) f.expected = res.status === 206 ? f.have + len : len;
       }
-      const ws = fs.createWriteStream(f.part, { flags: res.status === 206 ? 'a' : 'w' });
+      const ws = fs.createWriteStream(f.part, { flags: res.status === 200 ? 'w' : 'a' }); // 206 (reprise) et 416 (partiel déjà complet) : on ne tronque JAMAIS le partiel
       const src = res.status === 416 ? Readable.from([]) : Readable.fromWeb(res.body);
       src.on('data', (c) => {
         done += c.length;

@@ -1,0 +1,52 @@
+# Racine : les dossiers app/ et engine/ ont leur propre .gitignore.
+.claude/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*~
+
+# --- Never published: personal data, conversations, outputs, models ---
+# Application data (real: %APPDATA%\PAIZ\data ; development copy: app/.data) — conversations, memory, tasks, settings
+.data/
+data/
+**/opencode/storage/
+**/cloud-tasks/
+tasks.json
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.jsonl
+*.log
+# Outputs, reports, scratch
+reports/
+out/
+output/
+outputs/
+scratch/
+*.wsprofile
+# Model files (never in the repository)
+*.gguf
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.sft
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Notes about a separate personal project (kept locally, not published)
+engine/Docs/private/
+
+# Second moteur (llama.cpp récent, binaires téléchargés par engine/scripts/fetch-stock-llama.ps1)
+engine/stock-llama/
+
+# notes de conception internes (gardées en local, pas publiées)
+app/docs/MEMORY_DESIGN.md

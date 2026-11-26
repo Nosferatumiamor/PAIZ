@@ -1,0 +1,449 @@
+WeightStream
+
+    
+    RFC-0002 — Scheduler, Cache et Algorithmes de Streaming
+
+    Version : 0.1 (Draft)
+
+    
+
+    
+    
+    
+    1. Objectif
+
+    Le Scheduler est le composant central de WeightStream.
+
+    Son rôle est de garantir que les données demandées par le moteur d’inférence soient disponibles au moment exact où elles sont nécessaires.
+
+    Il ne réalise aucun calcul lié à l’intelligence artificielle.
+
+    Son unique responsabilité est l’orchestration du déplacement des données.
+
+    Le Scheduler doit chercher en permanence à maintenir un GPU occupé à 100 %, sans attente due aux transferts mémoire.
+
+    
+
+    
+    
+    2. Principe fondamental
+
+    Le Scheduler considère les poids du modèle comme des ressources virtuelles.
+
+    À aucun moment il ne suppose que les poids résident en permanence dans la VRAM.
+
+    Chaque tensor possède un état.
+
+    ON_DISK↓LOADING_RAM↓RAM_READY↓UPLOADING_GPU↓GPU_READY↓IN_USE↓GPU_READY↓RAM_READY↓EVICTED
+
+    Les transitions sont pilotées exclusivement par le Scheduler.
+
+    
+
+    
+    
+    3. Hiérarchie mémoire
+
+    WeightStream considère quatre niveaux de stockage.
+
+    SSD↓RAM↓VRAM↓GPU Compute
+
+    Chaque niveau possède :
+
+    une capacité
+
+    une latence
+
+    un débit
+
+    Le Scheduler prend ses décisions à partir de ces paramètres.
+
+    
+
+    
+    
+    4. Principe de fonctionnement
+
+    Le moteur d’inférence ne demande jamais une lecture disque.
+
+    Il demande uniquement :
+
+    GetTensor(id)
+
+    Le Scheduler détermine alors :
+
+    tensor déjà présent en VRAM ;
+
+    tensor présent en RAM ;
+
+    tensor uniquement sur SSD.
+
+    
+
+    
+    
+    5. Priorités
+
+    Chaque tensor possède un score.
+
+    Exemple :
+
+    Priority =Distance+Probabilité d'utilisation+Coût de rechargement+Historique
+
+    Le tensor ayant le score le plus élevé est chargé en priorité.
+
+    
+
+    
+    
+    6. États possibles
+
+    Chaque tensor possède un état.
+
+    NOT_LOADEDQUEUEDREADINGRAM_READYUPLOAD_PENDINGGPU_READYIN_USEEVICTINGERROR
+
+    Le Scheduler ne manipule jamais directement les données.
+
+    Il ne manipule que des états.
+
+    
+
+    
+    
+    7. Files d’attente
+
+    Le Scheduler pilote plusieurs files.
+
+    Read Queue↓RAM Queue↓Upload Queue↓GPU Queue
+
+    Chaque étape est indépendante.
+
+    Cela permet de paralléliser complètement le pipeline.
+
+    
+
+    
+    
+    8. Double Buffering
+
+    Le GPU ne doit jamais attendre.
+
+    Deux buffers minimum sont recommandés.
+
+    Buffer AcalculBuffer Bchargement
+
+    Pendant que A est utilisé :
+
+    B est rempli.
+
+    À la fin :
+
+    swap(A,B)
+
+    
+
+    
+    
+    9. Triple Buffering
+
+    Si la VRAM le permet :
+
+    AcalculBprêtCchargement
+
+    Le Scheduler possède alors davantage de marge.
+
+    
+
+    
+    
+    10. Fenêtre de préchargement
+
+    Le Scheduler maintient une fenêtre.
+
+    Exemple :
+
+    Layer courant38
+
+    Fenêtre :
+
+    39404142
+
+    Cette fenêtre est ajustable.
+
+    Elle dépend :
+
+    de la VRAM ;
+
+    de la RAM ;
+
+    du débit SSD.
+
+    
+
+    
+    
+    11. Préchargement adaptatif
+
+    La taille de la fenêtre n’est jamais fixe.
+
+    Si le SSD est rapide :
+
+    Window = 12
+
+    Si le SSD est lent :
+
+    Window = 4
+
+    Le Scheduler mesure continuellement les performances.
+
+    
+
+    
+    
+    12. Politique d’éviction
+
+    Un tensor ne doit jamais être supprimé simplement parce qu’il est ancien.
+
+    Chaque tensor possède un coût.
+
+    Exemple :
+
+    EvictionScore=Temps depuis la dernière utilisation+Temps nécessaire au rechargement-Probabilité de réutilisation
+
+    Le tensor avec le score le plus faible est supprimé.
+
+    
+
+    
+    
+    13. Préchargement intelligent
+
+    Version minimale :
+
+    Layer 38↓39↓40↓41
+
+    Version avancée :
+
+    Le Scheduler connaît plusieurs chemins possibles.
+
+    Exemple :
+
+    Expert A70 %Expert B20 %Expert C10 %
+
+    Il commence à charger les trois.
+
+    Les plus probables sont prioritaires.
+
+    
+
+    
+    
+    14. Budget mémoire
+
+    Le Scheduler fonctionne avec un budget.
+
+    Exemple :
+
+    RAM32 GoVRAM12 Go
+
+    Il ne doit jamais dépasser ces limites.
+
+    
+
+    
+    
+    15. Mécanisme de réservation
+
+    Avant un upload GPU :
+
+    Reserve()↓Upload()↓Commit()
+
+    Si la réservation échoue :
+
+    Le Scheduler attend qu’une éviction se termine.
+
+    
+
+    
+    
+    16. Streaming séquentiel
+
+    Les fichiers doivent être lus dans l’ordre.
+
+    Les lectures aléatoires sont à éviter.
+
+    Le Scheduler regroupe autant que possible les demandes.
+
+    Exemple :
+
+    Mauvais :
+
+    Layer 40Layer 2Layer 89Layer 17
+
+    Bon :
+
+    3839404142
+
+    
+
+    
+    
+    17. Regroupement
+
+    Si plusieurs tensors sont voisins sur le disque :
+
+    Le Scheduler peut demander :
+
+    Lecture1 Go
+
+    plutôt que
+
+    200 Mo200 Mo200 Mo200 Mo
+
+    Cela réduit les accès disque.
+
+    
+
+    
+    
+    18. Pipeline
+
+    Le pipeline complet est :
+
+    Planification↓Lecture SSD↓Cache RAM↓Décompression↓Upload GPU↓Prêt
+
+    Chaque étape possède son propre thread.
+
+    
+
+    
+    
+    19. Surveillance
+
+    Le Scheduler mesure en permanence :
+
+    temps de lecture SSD
+
+    temps de copie RAM
+
+    temps d’upload GPU
+
+    temps d’attente GPU
+
+    débit réel
+
+    occupation mémoire
+
+    nombre d’évictions
+
+    taux de cache hit
+
+    Ces mesures alimentent les décisions futures.
+
+    
+
+    
+    
+    20. Anticipation
+
+    Cette partie est spécifique aux assistants intelligents.
+
+    Le Scheduler peut recevoir des informations externes.
+
+    Exemple :
+
+    Conversation↓Probabilité :Code92 %Vision4 %Traduction3 %Image1 %
+
+    Le Scheduler commence alors à préparer le modèle de code.
+
+    Aucune demande explicite n’est encore arrivée.
+
+    Le chargement est spéculatif.
+
+    
+
+    
+    
+    21. Anticipation des tensors
+
+    Même principe à l’intérieur d’un modèle.
+
+    Si plusieurs branches sont possibles :
+
+    Tensor A90 %Tensor B8 %Tensor C2 %
+
+    Le Scheduler utilise son budget disponible pour précharger les trois.
+
+    Le plus probable reste prioritaire.
+
+    
+
+    
+    
+    22. Objectif principal
+
+    Le GPU ne doit jamais attendre une lecture disque.
+
+    Toutes les lectures doivent avoir été déclenchées avant que le besoin réel apparaisse.
+
+    Le Scheduler est donc un moteur de prédiction temporelle plus qu’un simple gestionnaire de cache.
+
+    
+
+    
+    
+    23. Architecture interne
+
+    Le Scheduler est composé de plusieurs sous-modules.
+
+    Scheduler├── Planner├── Predictor├── Cache Manager├── Memory Budget├── Eviction Manager├── Upload Manager├── Metrics└── Profiler
+
+    Chaque module est indépendant.
+
+    
+
+    
+    
+    24. Philosophie
+
+    Le Scheduler ne prend jamais de décision basée sur le contenu du modèle.
+
+    Il ne connaît ni les tokens, ni les couches, ni les opérations mathématiques.
+
+    Il ne connaît que :
+
+    des blocs
+
+    des coûts
+
+    des probabilités
+
+    des temps
+
+    des budgets
+
+    Il est donc théoriquement compatible avec n’importe quel moteur d’inférence.
+
+    
+
+    
+    
+    25. Perspectives
+
+    À terme, le Scheduler pourra devenir auto-adaptatif.
+
+    Au fil des exécutions, il construira un profil des modèles utilisés, des performances de la machine et des habitudes de l’utilisateur.
+
+    Il pourra alors ajuster automatiquement :
+
+    la taille des fenêtres de préchargement ;
+
+    les politiques d’éviction ;
+
+    la granularité des blocs ;
+
+    les budgets RAM/VRAM ;
+
+    les stratégies de préchargement spéculatif.
+
+    L’objectif n’est plus seulement de réagir aux demandes, mais de les anticiper suffisamment tôt pour rendre le streaming pratiquement invisible du point de vue du moteur d’inférence.

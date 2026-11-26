@@ -1,0 +1,83 @@
+diff --git a/src/llama-mmap.cpp b/src/llama-mmap.cpp
+index ed572da..65d3c4a 100644
+--- a/src/llama-mmap.cpp
++++ b/src/llama-mmap.cpp
+@@ -65,6 +65,38 @@ static std::string llama_format_win_err(DWORD err) {
+ 
+ // llama_file
+ 
++namespace {
++
++struct llama_byte_reader_state {
++    llama_byte_read_fn fn = nullptr;
++    void *             userdata = nullptr;
++};
++
++llama_byte_reader_state & llama_byte_reader() {
++    static llama_byte_reader_state state;
++    return state;
++}
++
++bool llama_try_byte_read(uint64_t offset, void * ptr, size_t len) {
++    auto & reader = llama_byte_reader();
++    if (!reader.fn) {
++        return false;
++    }
++    return reader.fn(reader.userdata, offset, ptr, len);
++}
++
++} // namespace
++
++void llama_file_set_byte_reader(llama_byte_read_fn fn, void * userdata) {
++    auto & reader = llama_byte_reader();
++    reader.fn = fn;
++    reader.userdata = userdata;
++}
++
++void llama_file_clear_byte_reader() {
++    llama_file_set_byte_reader(nullptr, nullptr);
++}
++
+ struct llama_file::impl {
+ #if defined(_WIN32)
+     HANDLE fp_win32;
+@@ -127,6 +159,10 @@ struct llama_file::impl {
+     }
+ 
+     void read_raw(void * ptr, size_t len) {
++        if (llama_try_byte_read(tell(), ptr, len)) {
++            seek(tell() + len, SEEK_SET);
++            return;
++        }
+         size_t bytes_read = 0;
+         while (bytes_read < len) {
+             size_t chunk_size = std::min<size_t>(len - bytes_read, 64*1024*1024);
+@@ -265,6 +301,10 @@ struct llama_file::impl {
+         if (len == 0) {
+             return;
+         }
++        if (llama_try_byte_read(tell(), ptr, len)) {
++            seek(tell() + len, SEEK_SET);
++            return;
++        }
+         errno = 0;
+         if (fd == -1) {
+             const size_t curr_off = tell();
+diff --git a/src/llama-mmap.h b/src/llama-mmap.h
+index b7d5c61..29f76fe 100644
+--- a/src/llama-mmap.h
++++ b/src/llama-mmap.h
+@@ -13,6 +13,13 @@ using llama_files  = std::vector<std::unique_ptr<llama_file>>;
+ using llama_mmaps  = std::vector<std::unique_ptr<llama_mmap>>;
+ using llama_mlocks = std::vector<std::unique_ptr<llama_mlock>>;
+ 
++/// Optional byte-level read hook (WeightStream and similar). When set, llama_file::read_raw
++/// calls this instead of fread/ReadFile. Offset is the absolute file position.
++using llama_byte_read_fn = bool (*)(void * userdata, std::uint64_t offset, void * buf, std::size_t len);
++
++void llama_file_set_byte_reader(llama_byte_read_fn fn, void * userdata);
++void llama_file_clear_byte_reader();
++
+ struct llama_file {
+     llama_file(const char * fname, const char * mode, bool use_direct_io = false);
+     llama_file(FILE * file);

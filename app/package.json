@@ -1,0 +1,33 @@
+﻿{
+  "name": "paiz",
+  "version": "0.2.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "description": "PAIZ â€” the AI models dispenser. Catalogue, range et swappe tes modeles IA sans re-telecharger.",
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "paiz": "src/cli.js",
+    "mdisp": "src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js serve",
+    "serve": "node src/cli.js serve",
+    "demo": "node scripts/demo.mjs",
+    "scan": "node src/cli.js scan",
+    "list": "node src/cli.js list",
+    "test": "node test/smoke.mjs && node test/guard.mjs && node test/mcp.mjs && node test/skills.mjs && node test/confs.mjs && node test/groups.mjs && node test/placement.mjs && node test/ecurie.mjs && node test/merge-roots.mjs && node test/accessory-role.mjs && node test/task-cloud.mjs && node test/stock-engine.mjs && node test/liberer.mjs && node test/menage.mjs && node test/tasks.mjs && node test/plans.mjs && node test/memory.mjs && node test/warm.mjs && node test/autoload.mjs && node test/chatstream.mjs && node test/fit.mjs && node test/runner.mjs && node test/extralight.mjs && node test/toolbudget.mjs && node test/usage.mjs && node test/quantize.mjs && node test/dedupe.mjs && node test/components.mjs && node test/hub-reuse.mjs && node test/clock.mjs && node test/localguard.mjs && node test/repomark.mjs && node test/dedupe-smart.mjs && node test/toolpick.mjs",
+    "tauri": "tauri",
+    "tauri:dev": "node scripts/prepare-tauri.mjs && tauri dev",
+    "tauri:prepare": "node scripts/prepare-tauri.mjs",
+    "tauri:icon": "tauri icon assets/paiz-icon.png",
+    "tauri:build": "node scripts/prepare-tauri.mjs && tauri build",
+    "tauri:build:exe": "node scripts/prepare-tauri.mjs && tauri build --no-bundle",
+    "tauri:installer": "node scripts/prepare-tauri.mjs --engine && tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.4"
+  }
+}

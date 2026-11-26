@@ -1,0 +1,307 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index f14f597..9ccf10c 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -8,7 +8,7 @@ version = "1.0.0"
+ description = "Stream transformer blocks layer-by-layer from disk to GPU with a pipelined prefetch queue (disk → CPU RAM → pinned RAM → GPU)."
+ readme = "README.md"
+ license = { text = "MIT" }
+-requires-python = ">=3.11"
++requires-python = ">=3.10"
+ keywords = ["llm", "inference", "streaming", "offloading", "pytorch", "cuda", "safetensors"]
+ classifiers = [
+     "Development Status :: 4 - Beta",
+diff --git a/src/layer_streamer/layer_streamer.py b/src/layer_streamer/layer_streamer.py
+index 5f1fdc4..516b897 100644
+--- a/src/layer_streamer/layer_streamer.py
++++ b/src/layer_streamer/layer_streamer.py
+@@ -1,3 +1,5 @@
++from __future__ import annotations
++
+ import math
+ import torch
+ import threading
+@@ -22,7 +24,8 @@ class LayerStreamer:
+         batch_gpu: int | None,
+         batch_cpu_pinned: int | None,
+         batch_cpu: int | None,
+-        track_progress: bool = True
++        track_progress: bool = True,
++        defer_gpu_pool: bool = False,
+     ) -> None:
+         self.model_dir = model_dir
+         self.tensor_info = tensor_info
+@@ -54,14 +57,12 @@ class LayerStreamer:
+                 self.pinned_pool.put((self._alloc(True, None), transfer_done))
+             torch.cuda.synchronize()
+ 
+-        num_gpu_slots = n_gpu + 1
+-        self.compute_done_events = [torch.cuda.Event() for _ in range(num_gpu_slots)]
+-        for event in self.compute_done_events: event.record()
+-        torch.cuda.synchronize()
+-
++        self.n_gpu = n_gpu
++        self._gpu_pool_initialized = False
++        self.compute_done_events: list[torch.cuda.Event] = []
+         self.gpu_pool: Q.Queue = Q.Queue()
+-        for slot_idx in range(num_gpu_slots):
+-            self.gpu_pool.put((slot_idx, self._alloc(False, 'cuda')))
++        if not defer_gpu_pool:
++            self._init_gpu_pool()
+ 
+         self.transfer_stream = torch.cuda.Stream()
+         self.compute_stream  = torch.cuda.Stream()
+@@ -70,11 +71,137 @@ class LayerStreamer:
+         self._pinned_queue: Q.Queue | None = None
+         self._gpu_queue: Q.Queue = Q.Queue()
+         self._h2d_events: list[torch.cuda.Event] = []
++        self._layer_ram_cache: list[dict[str, torch.Tensor]] | None = None
++        self._gpu_resident: dict[int, dict[str, torch.Tensor]] = {}
++        self.n_gpu_resident = 0
++        self._hybrid_cache_max = 0
++        self._hybrid_layer_cache: dict[int, dict[str, torch.Tensor]] = {}
++        self._hybrid_cache_lru: list[int] = []
++        self._hybrid_hits = 0
++        self._hybrid_misses = 0
++
++    def _init_gpu_pool(self) -> None:
++        if self._gpu_pool_initialized:
++            return
++        num_gpu_slots = self.n_gpu + 1
++        self.compute_done_events = [torch.cuda.Event() for _ in range(num_gpu_slots)]
++        for event in self.compute_done_events:
++            event.record()
++        torch.cuda.synchronize()
++        self.gpu_pool = Q.Queue()
++        for slot_idx in range(num_gpu_slots):
++            self.gpu_pool.put((slot_idx, self._alloc(False, "cuda")))
++        self._gpu_pool_initialized = True
++
++    def _ensure_gpu_pool(self) -> None:
++        self._init_gpu_pool()
++
++    def preload_layers_to_ram(self, show_progress: bool = True) -> None:
++        """Load all layer weights into host RAM once (reused across tokens)."""
++        if self._layer_ram_cache is not None:
++            return
++        layers: list[dict[str, torch.Tensor]] = []
++        iterator: Any = range(self.num_layers)
++        if show_progress:
++            iterator = tqdm(iterator, desc="cache RAM", leave=False)
++        for layer_idx in iterator:
++            slot = self._alloc(False, None)
++            self._read_block(layer_idx, slot)
++            layers.append(slot)
++        self._layer_ram_cache = layers
++
++    def preload_layers_to_pinned_ram(self, show_progress: bool = True) -> None:
++        """Alias: pageable RAM (pin_memory provoque des OOM CUDA sur Windows)."""
++        self.preload_layers_to_ram(show_progress=show_progress)
++
++    def preload_gpu_resident_layers(self, count: int, show_progress: bool = True) -> int:
++        """Keep the first `count` layers permanently on GPU. Returns actual count loaded."""
++        if self._layer_ram_cache is None:
++            raise RuntimeError("Call preload_layers_to_ram() first")
++        self._ensure_gpu_pool()
++        target = min(max(0, count), self.num_layers)
++        while target >= 0:
++            self._gpu_resident.clear()
++            try:
++                iterator: Any = range(target)
++                if show_progress:
++                    iterator = tqdm(iterator, desc="VRAM resident", leave=False)
++                for layer_idx in iterator:
++                    src = self._layer_ram_cache[layer_idx]
++                    dst = self._alloc(False, "cuda")
++                    for key in self.block_keys:
++                        dst[key].copy_(src[key])
++                    self._gpu_resident[layer_idx] = dst
++                torch.cuda.synchronize()
++                self.n_gpu_resident = target
++                return target
++            except RuntimeError as exc:
++                if "out of memory" not in str(exc).lower():
++                    raise
++                torch.cuda.empty_cache()
++                target -= 2
++        self.n_gpu_resident = 0
++        return 0
++
++    def enable_hybrid_ram_cache(self, max_layers: int) -> None:
++        """LRU cache: garde jusqu'a max_layers couches en RAM entre les tokens."""
++        self._hybrid_cache_max = max(0, max_layers)
++        self._hybrid_layer_cache.clear()
++        self._hybrid_cache_lru.clear()
++        self._hybrid_hits = 0
++        self._hybrid_misses = 0
++
++    def hybrid_cache_stats(self) -> tuple[int, int, int, int]:
++        return (
++            len(self._hybrid_layer_cache),
++            self._hybrid_cache_max,
++            self._hybrid_hits,
++            self._hybrid_misses,
++        )
++
++    def _touch_hybrid_lru(self, layer_idx: int) -> None:
++        if layer_idx in self._hybrid_cache_lru:
++            self._hybrid_cache_lru.remove(layer_idx)
++        self._hybrid_cache_lru.append(layer_idx)
++
++    def _hybrid_store(self, layer_idx: int, slot: dict[str, torch.Tensor]) -> None:
++        if self._hybrid_cache_max <= 0:
++            return
++        if layer_idx in self._hybrid_layer_cache:
++            self._touch_hybrid_lru(layer_idx)
++            return
++        while len(self._hybrid_layer_cache) >= self._hybrid_cache_max and self._hybrid_cache_lru:
++            evict = self._hybrid_cache_lru.pop(0)
++            del self._hybrid_layer_cache[evict]
++        stored = self._alloc(False, None)
++        for key in self.block_keys:
++            stored[key].copy_(slot[key])
++        self._hybrid_layer_cache[layer_idx] = stored
++        self._hybrid_cache_lru.append(layer_idx)
++
++    def _fill_layer_slot(self, layer_idx: int, cpu_slot: dict[str, torch.Tensor]) -> None:
++        if self._hybrid_cache_max > 0:
++            cached = self._hybrid_layer_cache.get(layer_idx)
++            if cached is not None:
++                self._hybrid_hits += 1
++                self._touch_hybrid_lru(layer_idx)
++                for key in self.block_keys:
++                    cpu_slot[key].copy_(cached[key])
++                return
++            self._hybrid_misses += 1
++        self._read_block(layer_idx, cpu_slot)
++        if self._hybrid_cache_max > 0:
++            self._hybrid_store(layer_idx, cpu_slot)
+ 
+     def run_pass(self,
+         x: torch.Tensor,
+         layer_fn: Callable[[torch.Tensor, dict[str, torch.Tensor], int], torch.Tensor]
+     ) -> torch.Tensor:
++        if isinstance(self._layer_ram_cache, list):
++            self._ensure_gpu_pool()
++            return self._run_pass_ram_cached(x, layer_fn)
++
++        self._ensure_gpu_pool()
+         self._cpu_queue = Q.Queue() if self.use_cpu else None
+         self._pinned_queue = Q.Queue() if self.use_pinned else None
+         self._gpu_queue = Q.Queue()
+@@ -106,6 +233,78 @@ class LayerStreamer:
+             thread.join()
+         return x
+ 
++    def _run_pass_ram_cached(
++        self,
++        x: torch.Tensor,
++        layer_fn: Callable[[torch.Tensor, dict[str, torch.Tensor], int], torch.Tensor],
++    ) -> torch.Tensor:
++        resident_end = self.n_gpu_resident
++        stream_end = self.num_layers
++
++        if resident_end >= stream_end:
++            self.compute_stream.wait_stream(torch.cuda.default_stream())
++            for layer_idx in range(stream_end):
++                with torch.cuda.stream(self.compute_stream):
++                    x = layer_fn(
++                        x,
++                        self._as_weights(self._gpu_resident[layer_idx], layer_idx),
++                        layer_idx,
++                    )
++            torch.cuda.current_stream().wait_stream(self.compute_stream)
++            return x
++
++        self._gpu_queue = Q.Queue()
++        self._h2d_events = [torch.cuda.Event() for _ in range(self.num_layers)]
++        for layer_idx in range(resident_end):
++            self._h2d_events[layer_idx].record()
++
++        h2d_thread = threading.Thread(
++            target=self._stage_h2d_from_ram_cache,
++            args=(resident_end,),
++            daemon=True,
++        )
++        h2d_thread.start()
++
++        self.compute_stream.wait_stream(torch.cuda.default_stream())
++
++        for layer_idx in range(resident_end):
++            with torch.cuda.stream(self.compute_stream):
++                x = layer_fn(
++                    x,
++                    self._as_weights(self._gpu_resident[layer_idx], layer_idx),
++                    layer_idx,
++                )
++
++        layer_iterator = self._drain(self._gpu_queue, self.done)
++        if self.track_progress:
++            layer_iterator = tqdm(layer_iterator, total=stream_end - resident_end, leave=False)
++        for layer_idx, slot_idx, gpu_slot in layer_iterator:
++            with torch.cuda.stream(self.compute_stream):
++                self.compute_stream.wait_event(self._h2d_events[layer_idx])
++                x = layer_fn(x, self._as_weights(gpu_slot, layer_idx), layer_idx)
++                self.compute_done_events[slot_idx].record()
++            self.gpu_pool.put((slot_idx, gpu_slot))
++
++        torch.cuda.current_stream().wait_stream(self.compute_stream)
++        h2d_thread.join()
++        return x
++
++    def _stage_h2d_from_ram_cache(self, start_layer: int) -> None:
++        if self._layer_ram_cache is None:
++            return
++        accumulator: list[Any] = []
++        for layer_idx in range(start_layer, self.num_layers):
++            src_slot = self._layer_ram_cache[layer_idx]
++            slot_idx, gpu_slot = self.gpu_pool.get()
++            with torch.cuda.stream(self.transfer_stream):
++                self.transfer_stream.wait_event(self.compute_done_events[slot_idx])
++                for key in self.block_keys:
++                    gpu_slot[key].copy_(src_slot[key], non_blocking=False)
++                self._h2d_events[layer_idx].record(self.transfer_stream)
++            accumulator = self._emit((layer_idx, slot_idx, gpu_slot), self._gpu_queue, accumulator, self.batch_gpu)
++        self._flush(accumulator, self._gpu_queue)
++        self._gpu_queue.put(self.done)
++
+     def _alloc(self, pin: bool, device: str | None) -> dict[str, torch.Tensor]:
+         if pin:
+             return { key: torch.empty(self.block_sizes[key], dtype=self.raw_dtype).pin_memory() for key in self.block_keys }
+@@ -171,7 +370,7 @@ class LayerStreamer:
+         accumulator: list[Any] = []
+         for layer_idx in range(self.num_layers):
+             cpu_slot = self.cpu_pool.get()
+-            self._read_block(layer_idx, cpu_slot)
++            self._fill_layer_slot(layer_idx, cpu_slot)
+             accumulator = self._emit((layer_idx, cpu_slot), self._cpu_queue, accumulator, self.batch_cpu)
+ 
+         self._flush(accumulator, self._cpu_queue)
+@@ -193,7 +392,7 @@ class LayerStreamer:
+         else:
+             for layer_idx in range(self.num_layers):
+                 cpu_slot = self._alloc(False, None)
+-                self._read_block(layer_idx, cpu_slot)
++                self._fill_layer_slot(layer_idx, cpu_slot)
+                 pinned_slot, transfer_done = self.pinned_pool.get()
+                 transfer_done.synchronize()
+                 for key in self.block_keys:
+@@ -232,7 +431,7 @@ class LayerStreamer:
+         else:
+             for layer_idx in range(self.num_layers):
+                 src_slot = self._alloc(False, None)
+-                self._read_block(layer_idx, src_slot)
++                self._fill_layer_slot(layer_idx, src_slot)
+                 slot_idx, gpu_slot = self.gpu_pool.get()
+                 with torch.cuda.stream(self.transfer_stream):
+                     self.transfer_stream.wait_event(self.compute_done_events[slot_idx])
+diff --git a/src/layer_streamer/tuner.py b/src/layer_streamer/tuner.py
+index 61bfcf5..36fad61 100644
+--- a/src/layer_streamer/tuner.py
++++ b/src/layer_streamer/tuner.py
+@@ -1,3 +1,5 @@
++from __future__ import annotations
++
+ import time
+ import torch
+ import itertools

@@ -1,0 +1,30 @@
+code	Écris une fonction Python qui fusionne deux listes triées en une seule liste triée, avec des tests unitaires.
+code	Explique la différence entre une Promise et async/await en JavaScript, avec un exemple de code.
+code	Corrige ce code C++ qui fuit de la mémoire : int* f() { int* p = new int[10]; return p; } et propose une version avec std::vector.
+code	Écris une requête SQL qui renvoie les 5 clients ayant le plus gros total de commandes en 2024, avec leur nombre de commandes.
+code	Écris un script Bash qui parcourt un dossier, compresse chaque fichier .log de plus de 7 jours et supprime l'original.
+discussion	Salut ! Tu as passé une bonne journée ? Moi je suis un peu fatigué, j'ai mal dormi.
+discussion	Je n'arrive pas à me motiver pour faire du sport le soir, tu as des conseils simples ?
+discussion	Qu'est-ce que tu me conseilles comme film à regarder ce soir pour me détendre ?
+discussion	Je dois annoncer à un ami que je ne pourrai pas venir à son anniversaire, comment le dire gentiment ?
+discussion	Raconte-moi une petite anecdote amusante pour me remonter le moral.
+traduction	Traduis en anglais : Le rapport trimestriel sera envoyé aux actionnaires avant la fin du mois.
+traduction	Traduis en espagnol : Pourriez-vous m'indiquer le chemin de la gare la plus proche, s'il vous plaît ?
+traduction	Traduis en allemand : Nous avons bien reçu votre commande et elle sera expédiée demain matin.
+traduction	Traduis en français : The quick development of renewable energy is reshaping the global economy.
+traduction	Traduis en italien : Le musée est fermé le lundi, mais les jardins restent ouverts au public.
+histoire	Quelles ont été les principales causes de la Révolution française de 1789 ?
+histoire	Raconte brièvement le règne de Charlemagne et son importance pour l'Europe.
+histoire	Pourquoi l'Empire romain d'Occident s'est-il effondré au Ve siècle ?
+histoire	Quel a été le rôle de la bataille de Verdun pendant la Première Guerre mondiale ?
+histoire	Explique les conséquences de la chute du mur de Berlin en 1989.
+sciences	Explique simplement comment fonctionne la photosynthèse chez les plantes.
+sciences	Pourquoi le ciel est-il bleu le jour et rouge au coucher du soleil ?
+sciences	Qu'est-ce qu'un trou noir et comment se forme-t-il ?
+sciences	Comment les vaccins à ARN messager déclenchent-ils une réponse immunitaire ?
+sciences	Explique la différence entre la fission et la fusion nucléaire.
+calcul	Calcule 17 × 24 + 356 ÷ 4 et détaille chaque étape.
+calcul	Résous l'équation 3x² - 12x + 9 = 0 en détaillant la méthode.
+calcul	Un prêt de 15 000 € à 4 % par an sur 5 ans : quelle est la mensualité ? Détaille le calcul.
+calcul	Calcule la dérivée de f(x) = x³ · ln(x) et simplifie le résultat.
+calcul	Dans une classe de 30 élèves, 40 % sont des filles. Combien de garçons y a-t-il ? Explique.

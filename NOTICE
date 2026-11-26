@@ -1,0 +1,22 @@
+PAIZ — weight streamer
+Copyright 2026 GROM-le-vrai and PAIZ contributors
+
+The PAIZ source code (app/ and engine/, except the parts listed below) is licensed under the
+Apache License, Version 2.0 (see LICENSE).
+
+Artwork is NOT covered by the Apache License:
+  the PAIZ logo, the robot splash screen, the character faces and the expression sheets
+  (app/assets/*.png, app/public/logo.webp, app/public/favicon.png, app/public/v2/logo.webp,
+  app/public/v2/faces/, app/ui/*.webp, app/src-tauri/icons/)
+  Copyright 2026 GROM-le-vrai. All rights reserved. They may be redistributed unmodified as part
+  of PAIZ, but not reused in other projects without permission.
+
+Third-party software:
+  - llama.cpp (engine/third_party/llama.cpp, git submodule) — MIT License, Copyright (c) 2023-2026 The ggml authors.
+    PAIZ adds its expert-streaming hooks as a patch (engine/Docs/patches/).
+  - Tauri (desktop window, build-time dependency) — MIT or Apache-2.0.
+  - Node.js (bundled runtime in the desktop build) — MIT License.
+
+Models are never distributed with PAIZ. Each model keeps its own license (Gemma terms, Apache-2.0, MIT…),
+which you accept when you download it. Skills and MCP tools installed from the catalogue keep the licence of
+their own repository.

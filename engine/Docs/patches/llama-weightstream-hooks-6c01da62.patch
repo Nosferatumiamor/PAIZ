@@ -1,0 +1,1051 @@
+diff --git a/ggml/include/ggml-cpu.h b/ggml/include/ggml-cpu.h
+index dc6453c6..c34133c7 100644
+--- a/ggml/include/ggml-cpu.h
++++ b/ggml/include/ggml-cpu.h
+@@ -34,6 +34,13 @@ extern "C" {
+         GGML_NUMA_STRATEGY_COUNT
+     };
+ 
++    // WeightStream: optional provider of expert weights for GGML_OP_MUL_MAT_ID on the CPU backend. Called by one thread,
++    // after the routing is known, with the op (src[0] = stacked expert weights, src[1] = activations, src[2] = ids) and
++    // the sorted list of experts it will read; it fills out[i] with a pointer to the weights of experts[i] (valid until
++    // the next call) and returns true, or returns false to use src[0]->data.
++    typedef bool (*ggml_cpu_expert_fetch_t)(void * user, const struct ggml_tensor * op, const int32_t * experts, int n_experts, const void ** out);
++    GGML_BACKEND_API void    ggml_cpu_set_expert_fetch(ggml_cpu_expert_fetch_t fetch, void * user);
++
+     GGML_BACKEND_API void    ggml_numa_init(enum ggml_numa_strategy numa); // call once for better performance on NUMA systems
+     GGML_BACKEND_API bool    ggml_is_numa(void); // true if init detected that system has >1 NUMA node
+ 
+diff --git a/ggml/src/ggml-cpu/ggml-cpu.c b/ggml/src/ggml-cpu/ggml-cpu.c
+index c2826fcc..bf046d60 100644
+--- a/ggml/src/ggml-cpu/ggml-cpu.c
++++ b/ggml/src/ggml-cpu/ggml-cpu.c
+@@ -1560,6 +1560,18 @@ static void * incr_ptr_aligned(void ** p, size_t size, size_t align) {
+     return ptr;
+ }
+ 
++static ggml_cpu_expert_fetch_t g_expert_fetch      = NULL;
++static void *                  g_expert_fetch_user = NULL;
++static const void **           g_expert_ptrs       = NULL; // [n_as] provider pointer per expert, NULL = use src0->data
++static int32_t *               g_expert_list       = NULL; // [n_as] experts the current op reads
++static const void **           g_expert_out        = NULL; // [n_as] provider output
++static int64_t                 g_expert_cap        = 0;
++
++void ggml_cpu_set_expert_fetch(ggml_cpu_expert_fetch_t fetch, void * user) {
++    g_expert_fetch      = fetch;
++    g_expert_fetch_user = user;
++}
++
+ static void ggml_compute_forward_mul_mat_id(
+         const struct ggml_compute_params * params,
+               struct ggml_tensor * dst) {
+@@ -1682,6 +1694,33 @@ static void ggml_compute_forward_mul_mat_id(
+ 
+     ggml_barrier(params->threadpool);
+ 
++    const void ** expert_ptrs = NULL;
++    if (g_expert_fetch) {
++        if (ith == 0) {
++            if (g_expert_cap < n_as) {
++                free(g_expert_ptrs); free(g_expert_list); free(g_expert_out);
++                g_expert_ptrs = (const void **) calloc(n_as, sizeof(void *));
++                g_expert_list = (int32_t *)     calloc(n_as, sizeof(int32_t));
++                g_expert_out  = (const void **) calloc(n_as, sizeof(void *));
++                g_expert_cap  = n_as;
++            }
++            int n_used = 0;
++            for (int a = 0; a < n_as; ++a) {
++                g_expert_ptrs[a] = NULL;
++                if (matrix_row_counts[a] > 0) {
++                    g_expert_list[n_used++] = a;
++                }
++            }
++            if (n_used > 0 && g_expert_fetch(g_expert_fetch_user, dst, g_expert_list, n_used, g_expert_out)) {
++                for (int k = 0; k < n_used; ++k) {
++                    g_expert_ptrs[g_expert_list[k]] = g_expert_out[k];
++                }
++            }
++        }
++        ggml_barrier(params->threadpool);
++        expert_ptrs = g_expert_ptrs;
++    }
++
+     for (int cur_a = 0; cur_a < n_as; ++cur_a) {
+         const int64_t cne1 = matrix_row_counts[cur_a];
+ 
+@@ -1690,11 +1729,13 @@ static void ggml_compute_forward_mul_mat_id(
+         }
+ 
+         // tiled takes over if profitable for this expert (see tiled.h)
+-        if (ggml_compute_forward_mul_mat_id_tiled(params, dst, cur_a, cne1, (const int32_t *) &MMID_MATRIX_ROW(cur_a, 0), tiled_scratch)) {
++        // the tiled kernels read src0->data directly, so they are skipped while a provider is installed
++        if (!expert_ptrs && ggml_compute_forward_mul_mat_id_tiled(params, dst, cur_a, cne1, (const int32_t *) &MMID_MATRIX_ROW(cur_a, 0), tiled_scratch)) {
+             continue;
+         }
+ 
+-        const char * src0_cur = (const char *) src0->data + cur_a * nb02;
++        const char * src0_cur = (expert_ptrs && expert_ptrs[cur_a]) ? (const char *) expert_ptrs[cur_a]
++                                                                    : (const char *) src0->data + cur_a * nb02;
+         const void * wdata = (src1->type == vec_dot_type) ? src1->data : params->wdata;
+         const size_t row_size = ggml_row_size(vec_dot_type, ne10);
+ 
+diff --git a/src/llama-context.cpp b/src/llama-context.cpp
+index ea20062a..ae4ad76d 100644
+--- a/src/llama-context.cpp
++++ b/src/llama-context.cpp
+@@ -990,6 +990,10 @@ ggml_backend_sched_t llama_context::get_sched() const {
+     return sched.get();
+ }
+ 
++size_t llama_context::moe_cache_preload(int32_t il, const int32_t * experts, size_t n) {
++    return moe_cache ? moe_cache->preload(il, experts, n) : 0;
++}
++
+ uint32_t llama_context::n_ctx() const {
+     return cparams.n_ctx;
+ }
+@@ -3025,6 +3029,29 @@ bool llama_context::sched_copy_experts(ggml_backend_t backend, const ggml_tensor
+         }
+ 
+         st.ids = ids;
++        // WS_TRACE_IDS=<file> : routing choices of the big batches that bypass the MoE cache: [layer_seq, n_tokens, n_ids, ids...] (token-major)
++        {
++            static FILE * tid = [] { const char * p = std::getenv("WS_TRACE_IDS"); return p != nullptr ? std::fopen(p, "wb") : nullptr; }();
++            static int32_t tid_seq = 0;
++            if (tid != nullptr && ids->ne[1] > 1) {
++                std::vector<int32_t> tok((size_t) (ids->ne[0]*ids->ne[1]));
++                for (int64_t i1 = 0; i1 < ids->ne[1]; i1++) {
++                    for (int64_t i0 = 0; i0 < ids->ne[0]; i0++) {
++                        tok[(size_t) (i1*ids->ne[0] + i0)] = st.ids_data[i1*ids->nb[1]/sizeof(int32_t) + i0*ids->nb[0]/sizeof(int32_t)];
++                    }
++                }
++                const char * nm = std::strrchr(ggml_get_name(dst), '-');
++                const int32_t hdr[3] = { nm != nullptr ? std::atoi(nm + 1) : -1 - tid_seq++, (int32_t) ids->ne[1], (int32_t) tok.size() };
++                std::fwrite(hdr, sizeof(hdr), 1, tid);
++                std::fwrite(tok.data(), sizeof(int32_t), tok.size(), tid);
++                std::fflush(tid);
++            }
++        }
++    }
++
++    // a big batch that needs most of the experts: the whole tensor is streamed from the SSD by big sequential reads, read ahead
++    if (lctx->moe_cache && lctx->moe_cache->bulk_upload(backend, src, dst, std::count(st.used.begin(), st.used.end(), true))) {
++        return true;
+     }
+ 
+     // group consecutive experts and copy them together
+@@ -3046,7 +3073,7 @@ bool llama_context::sched_copy_experts(ggml_backend_t backend, const ggml_tensor
+                 e++;
+                 continue;
+             }
+-            if (next < e) {
++            if (next < e && !llama_moe_source_upload(backend, src, dst, next, e)) {
+                 ggml_backend_tensor_set_async(backend, dst, (const uint8_t *) src->data + next*expert_size, next*expert_size, (e - next)*expert_size);
+             }
+             e   += n;
+@@ -3057,7 +3084,12 @@ bool llama_context::sched_copy_experts(ggml_backend_t backend, const ggml_tensor
+         const size_t offset  = next*expert_size;
+         const size_t padding = last < n_expert - 1 ? std::min<size_t>(expert_size, 512) : 0;
+         const size_t size    = (last + 1 - next)*expert_size + padding;
+-        if (size > 0) {
++        if (next <= last && llama_moe_source_upload(backend, src, dst, next, last + 1)) {
++            // through the expert source, only the padding comes from the mapped weights
++            if (padding > 0) {
++                ggml_backend_tensor_set_async(backend, dst, (const uint8_t *) src->data + (last + 1)*expert_size, (last + 1)*expert_size, padding);
++            }
++        } else if (size > 0) {
+             ggml_backend_tensor_set_async(backend, dst, (const uint8_t *) src->data + offset, offset, size);
+         }
+ 
+@@ -4411,6 +4443,10 @@ uint32_t llama_n_ctx(const llama_context * ctx) {
+     return ctx->n_ctx();
+ }
+ 
++size_t llama_moe_cache_preload(llama_context * ctx, int32_t il, const int32_t * experts, size_t n_experts) {
++    return ctx->moe_cache_preload(il, experts, n_experts);
++}
++
+ uint32_t llama_n_ctx_seq(const llama_context * ctx) {
+     return ctx->n_ctx_seq();
+ }
+diff --git a/src/llama-context.h b/src/llama-context.h
+index 39c5619d..42fa5883 100644
+--- a/src/llama-context.h
++++ b/src/llama-context.h
+@@ -67,6 +67,8 @@ struct llama_context {
+ 
+     uint32_t n_ctx()     const;
+     uint32_t n_ctx_seq() const;
++
++    size_t moe_cache_preload(int32_t il, const int32_t * experts, size_t n);
+     uint32_t n_batch()   const;
+     uint32_t n_ubatch()  const;
+     uint32_t n_seq_max() const;
+diff --git a/src/llama-ext.h b/src/llama-ext.h
+index b55c0c35..750b410c 100644
+--- a/src/llama-ext.h
++++ b/src/llama-ext.h
+@@ -205,3 +205,52 @@ LLAMA_API uint32_t llama_model_n_tokens_delay(const struct llama_model * model);
+ 
+ // each sequence is paired with an unconditional one at n_seq_max / 2 + seq_id, in a unified KV cache
+ LLAMA_API bool llama_model_classifier_free_guidance(const struct llama_model * model);
++
++//
++// MoE expert source
++//
++
++// an expert the MoE cache needs to upload to the device on a cache miss
++struct llama_moe_expert_read {
++    const struct ggml_tensor * tensor; // host tensor of stacked experts (ffn_*_exps), tensor->nb[2] bytes per expert
++    int64_t                    expert;
++    const void *               data;   // set by the source, must stay valid until its next call
++};
++
++// reads the experts of a MoE cache miss instead of tensor->data, which is an mmap that page-faults when the model
++// does not fit in host memory; called once per layer with all of its misses so they can be read in parallel
++// returns false to fall back to tensor->data for this layer
++typedef bool (*llama_moe_expert_source)(void * user_data, struct llama_moe_expert_read * reads, size_t n_reads);
++
++LLAMA_API void llama_moe_set_expert_source(llama_moe_expert_source source, void * user_data);
++
++// largest number of reads the expert source can serve in one call, 0 = no limit: a large batch (prefill) that needs more experts
++// of a layer than that is uploaded in slices instead of falling back to tensor->data (the mmap, which then fills the host memory)
++LLAMA_API void llama_moe_set_expert_source_limit(size_t max_reads);
++
++// reads bytes [offset, offset + nbytes) of the expert tensor `tensor_name` (GGUF name) with big sequential reads into dst (aligned to 4096, dst_capacity
++// bytes, which also covers the sector rounding): the data starts at dst + *skew. Used by the prefill of a big batch, which needs almost every expert of
++// a layer: the whole tensors are streamed from the SSD in order, read ahead into pinned staging buffers while the GPU computes the previous layer,
++// instead of one random read per expert. Called from a reader thread, returns false to fall back to the expert source
++typedef bool (*llama_moe_bulk_reader)(void * user_data, const char * tensor_name, size_t offset, size_t nbytes, void * dst, size_t dst_capacity, size_t * skew);
++
++LLAMA_API void llama_moe_set_bulk_reader(llama_moe_bulk_reader reader, void * user_data);
++
++// observes the experts selected for each token of every layer that goes through the MoE cache:
++// ids holds n_ids expert indices, n_expert_used per token, token by token
++typedef void (*llama_moe_expert_observer)(void * user_data, int32_t il, const int32_t * ids, size_t n_ids);
++
++LLAMA_API void llama_moe_set_expert_observer(llama_moe_expert_observer observer, void * user_data);
++
++// called during generation (WS_LOOK) with the experts of layer il predicted to be used soon and not in the VRAM cache, the expert source may read them ahead
++// (asynchronously: the call must not block)
++typedef void (*llama_moe_expert_prefetch)(void * user_data, int32_t il, const int32_t * experts, size_t n_experts);
++
++// the number of experts predicted for the next layer during generation (0 = lookahead off, the default; distance = how many layers ahead; env WS_LOOK sets the initial value)
++LLAMA_API void llama_moe_set_lookahead(int n_experts, int distance);
++
++LLAMA_API void llama_moe_set_expert_prefetch(llama_moe_expert_prefetch prefetch, void * user_data);
++
++// fills the free slots of the MoE cache with the given experts of layer il, no decode may run meanwhile
++// returns the number of experts uploaded, 0 if the context has no MoE cache
++LLAMA_API size_t llama_moe_cache_preload(struct llama_context * ctx, int32_t il, const int32_t * experts, size_t n_experts);
+diff --git a/src/llama-graph.cpp b/src/llama-graph.cpp
+index b99370e2..d62e9019 100644
+--- a/src/llama-graph.cpp
++++ b/src/llama-graph.cpp
+@@ -1,5 +1,7 @@
+ #include "llama-graph.h"
+ 
++#include <cstdlib>
++
+ #include "llama-impl.h"
+ #include "llama-model.h"
+ #include "llama-moe-cache.h"
+@@ -2410,6 +2412,24 @@ ggml_tensor * llm_graph_context::build_moe_ffn(
+     //call early so that topk-moe can be used
+     ggml_build_forward_expand(gf, weights);
+ 
++    // WS_LOOK : lookahead. The router of the next layer applied to the input of this one (the residual stream changes slowly) gives the experts
++    // the next layer is likely to use; the MoE cache copy callback reads them with the ids and the expert source may read them ahead
++    // (must come before the slot lookup, so it is computed in the same split as the ids)
++    {
++        int look_d = 1;
++        const int look_k = llama_moe_get_lookahead(&look_d);
++        if (look_k > 0 && moe_cache != nullptr && n_tokens == 1 && il + look_d < (int) n_layer && model.layers[il + look_d].ffn_gate_inp != nullptr &&
++            model.layers[il + look_d].ffn_gate_inp->ne[0] == cur->ne[0] &&
++            moe_cache->get_slot_map(il, selected_experts->ne[1], selected_experts->ne[0]) != nullptr) {
++            ggml_tensor * next_logits = ggml_mul_mat(ctx0, model.layers[il + look_d].ffn_gate_inp, cur);
++            ggml_tensor * pred = ggml_argsort_top_k(ctx0, next_logits, (int) std::min<int64_t>(look_k, next_logits->ne[0]));
++            ggml_set_output(pred);
++            ggml_format_name(pred, "moe_look-%d", il);
++            ggml_build_forward_expand(gf, pred);
++            moe_cache->set_look(il, pred);
++        }
++    }
++
+     // the experts of host-resident layers may be read from the MoE cache
+     ggml_tensor * slots = build_moe_cache_slots(selected_experts, up_exps, gate_exps, down_exps, gate_up_exps, il);
+ 
+diff --git a/src/llama-mmap.cpp b/src/llama-mmap.cpp
+index 4d1cd31e..af9b6ae5 100644
+--- a/src/llama-mmap.cpp
++++ b/src/llama-mmap.cpp
+@@ -66,6 +66,38 @@ static std::string llama_format_win_err(DWORD err) {
+ 
+ // llama_file
+ 
++namespace {
++
++struct llama_byte_reader_state {
++    llama_byte_read_fn fn = nullptr;
++    void *             userdata = nullptr;
++};
++
++llama_byte_reader_state & llama_byte_reader() {
++    static llama_byte_reader_state state;
++    return state;
++}
++
++bool llama_try_byte_read(uint64_t offset, void * ptr, size_t len) {
++    auto & reader = llama_byte_reader();
++    if (!reader.fn) {
++        return false;
++    }
++    return reader.fn(reader.userdata, offset, ptr, len);
++}
++
++} // namespace
++
++void llama_file_set_byte_reader(llama_byte_read_fn fn, void * userdata) {
++    auto & reader = llama_byte_reader();
++    reader.fn = fn;
++    reader.userdata = userdata;
++}
++
++void llama_file_clear_byte_reader() {
++    llama_file_set_byte_reader(nullptr, nullptr);
++}
++
+ struct llama_file::impl {
+ #if defined(_WIN32)
+     HANDLE fp_win32;
+@@ -128,6 +160,10 @@ struct llama_file::impl {
+     }
+ 
+     void read_raw(void * ptr, size_t len) {
++        if (llama_try_byte_read(tell(), ptr, len)) {
++            seek(tell() + len, SEEK_SET);
++            return;
++        }
+         size_t bytes_read = 0;
+         while (bytes_read < len) {
+             size_t chunk_size = std::min<size_t>(len - bytes_read, 64*1024*1024);
+@@ -266,6 +302,10 @@ struct llama_file::impl {
+         if (len == 0) {
+             return;
+         }
++        if (llama_try_byte_read(tell(), ptr, len)) {
++            seek(tell() + len, SEEK_SET);
++            return;
++        }
+         errno = 0;
+         if (fd == -1) {
+             const size_t curr_off = tell();
+diff --git a/src/llama-mmap.h b/src/llama-mmap.h
+index 6c6393d5..201631e3 100644
+--- a/src/llama-mmap.h
++++ b/src/llama-mmap.h
+@@ -17,6 +17,13 @@ using llama_files  = std::vector<std::unique_ptr<llama_file>>;
+ using llama_mmaps  = std::vector<std::unique_ptr<llama_mmap>>;
+ using llama_mlocks = std::vector<std::unique_ptr<llama_mlock>>;
+ 
++/// Optional byte-level read hook (WeightStream and similar). When set, llama_file::read_raw
++/// calls this instead of fread/ReadFile. Offset is the absolute file position.
++using llama_byte_read_fn = bool (*)(void * userdata, std::uint64_t offset, void * buf, std::size_t len);
++
++void llama_file_set_byte_reader(llama_byte_read_fn fn, void * userdata);
++void llama_file_clear_byte_reader();
++
+ struct llama_file {
+     llama_file(const char * fname, const char * mode, bool use_direct_io = false);
+     llama_file(FILE * file);
+diff --git a/src/llama-model.cpp b/src/llama-model.cpp
+index 0b063e84..dae3064c 100644
+--- a/src/llama-model.cpp
++++ b/src/llama-model.cpp
+@@ -1985,7 +1985,8 @@ bool llama_model_base::load_tensors(llama_model_loader & ml) {
+     // per-tensor activation precision policy
+     prec_policy.load(ml, *this);
+ 
+-    ml.init_mappings(true, use_mlock ? &pimpl->mlock_mmaps : nullptr);
++    // WeightStream streams the experts itself: prefetching the whole file would fill the working set for nothing
++    ml.init_mappings(getenv("WEIGHTSTREAM_NO_PREFETCH") == nullptr, use_mlock ? &pimpl->mlock_mmaps : nullptr);
+     pimpl->mappings.reserve(ml.mappings.size());
+ 
+     // create the backend buffers
+diff --git a/src/llama-moe-cache.cpp b/src/llama-moe-cache.cpp
+index b736930f..911940f7 100644
+--- a/src/llama-moe-cache.cpp
++++ b/src/llama-moe-cache.cpp
+@@ -1,5 +1,10 @@
+ #include "llama-moe-cache.h"
+ 
++#include <chrono>
++#include <cstdio>
++#include <cstdlib>
++
++#include "llama-ext.h"
+ #include "llama-impl.h"
+ #include "llama-memory.h"
+ #include "llama-model.h"
+@@ -8,10 +13,103 @@
+ 
+ #include <algorithm>
+ #include <cmath>
++#include <condition_variable>
++#include <deque>
++#include <mutex>
++#include <thread>
+ #include <stdexcept>
+ #include <unordered_map>
+ #include <vector>
+ 
++static llama_moe_expert_source g_expert_source      = nullptr;
++static void *                  g_expert_source_user = nullptr;
++
++void llama_moe_set_expert_source(llama_moe_expert_source source, void * user_data) {
++    g_expert_source      = source;
++    g_expert_source_user = user_data;
++}
++
++static llama_moe_bulk_reader g_bulk_reader      = nullptr;
++static void *                g_bulk_reader_user = nullptr;
++
++void llama_moe_set_bulk_reader(llama_moe_bulk_reader reader, void * user_data) {
++    g_bulk_reader      = reader;
++    g_bulk_reader_user = user_data;
++}
++
++static size_t g_expert_source_limit = 0;
++
++void llama_moe_set_expert_source_limit(size_t max_reads) {
++    g_expert_source_limit = max_reads;
++}
++
++bool llama_moe_source_upload(ggml_backend_t backend, const ggml_tensor * w, ggml_tensor * dst, int64_t first, int64_t last_excl) {
++    if (g_expert_source == nullptr) {
++        return false;
++    }
++    const size_t  expert_size = w->nb[2];
++    const int64_t step        = g_expert_source_limit > 0 ? (int64_t) g_expert_source_limit : std::max<int64_t>(1, last_excl - first);
++    static const bool prof = std::getenv("WS_PROF") != nullptr;
++    static double t_src = 0, t_set = 0, t_sync = 0; static size_t n_calls = 0, n_exp = 0, n_slices = 0, n_fail = 0;
++    auto now = []() { return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count(); };
++    std::vector<llama_moe_expert_read> reads;
++    for (int64_t pos = first; pos < last_excl; ) {
++        const int64_t n = std::min(step, last_excl - pos);
++        reads.clear();
++        for (int64_t i = 0; i < n; i++) {
++            reads.push_back({w, pos + i, nullptr});
++        }
++        const double t0 = prof ? now() : 0;
++        const bool ok = g_expert_source(g_expert_source_user, reads.data(), reads.size()) &&
++            std::all_of(reads.begin(), reads.end(), [](const llama_moe_expert_read & r) { return r.data != nullptr; });
++        const double t1 = prof ? now() : 0;
++        for (int64_t i = 0; i < n; i++) {
++            const void * data = ok ? reads[i].data : (const void *) ((const uint8_t *) w->data + (pos + i)*expert_size);
++            ggml_backend_tensor_set_async(backend, dst, data, (pos + i)*expert_size, expert_size);
++        }
++        const double t2 = prof ? now() : 0;
++        ggml_backend_synchronize(backend); // the slots of this slice are reused by the next call
++        if (prof) {
++            const double t3 = now();
++            t_src += t1 - t0; t_set += t2 - t1; t_sync += t3 - t2; n_exp += n; ++n_slices; n_fail += ok ? 0 : 1;
++            if (++n_calls % 90 == 0) {
++                std::fprintf(stderr, "[ws_prof] slices=%zu experts=%zu fail=%zu | source %.2fs  set_async %.2fs  sync %.2fs\n", n_slices, n_exp, n_fail, t_src, t_set, t_sync);
++            }
++        }
++        pos += n;
++    }
++    return true;
++}
++
++static llama_moe_expert_observer g_expert_observer      = nullptr;
++static void *                    g_expert_observer_user = nullptr;
++
++static int g_lookdist = 1;
++static int g_lookahead = [] { const char * e = std::getenv("WS_LOOK"); return e ? std::max(0, std::atoi(e)) : 0; }();
++
++void llama_moe_set_lookahead(int n_experts, int distance) {
++    g_lookahead = std::max(0, n_experts);
++    g_lookdist  = std::max(1, distance);
++}
++
++int llama_moe_get_lookahead(int * distance) {
++    *distance = g_lookdist;
++    return g_lookahead;
++}
++
++static llama_moe_expert_prefetch g_expert_prefetch      = nullptr;
++static void *                    g_expert_prefetch_user = nullptr;
++
++void llama_moe_set_expert_prefetch(llama_moe_expert_prefetch prefetch, void * user_data) {
++    g_expert_prefetch      = prefetch;
++    g_expert_prefetch_user = user_data;
++}
++
++void llama_moe_set_expert_observer(llama_moe_expert_observer observer, void * user_data) {
++    g_expert_observer      = observer;
++    g_expert_observer_user = user_data;
++}
++
+ namespace {
+ 
+ // ClassLRU: one LRU list per frequency class, over the experts of a group of layers
+@@ -187,6 +285,16 @@ struct moe_cache_lru {
+                 uniq.push_back(ids[i]);
+             }
+         }
++        // WS_TRACE=<file> : record (layer, n_tokens, distinct experts) of every plan(), replayed by tools/sim_cache.py
++        {
++            static FILE * trace = [] { const char * p = std::getenv("WS_TRACE"); return p != nullptr ? std::fopen(p, "wb") : nullptr; }();
++            if (trace != nullptr) {
++                const int32_t hdr[3] = { il, (int32_t) n_tokens, (int32_t) uniq.size() };
++                std::fwrite(hdr, sizeof(hdr), 1, trace);
++                std::fwrite(uniq.data(), sizeof(int32_t), uniq.size(), trace);
++                std::fflush(trace);
++            }
++        }
+         if (uniq.size() > (size_t) n_slots) {
+             return false;
+         }
+@@ -314,6 +422,7 @@ struct llama_moe_cache::impl {
+ 
+     std::vector<int32_t> ids;
+     std::vector<moe_cache_lru::fill> fills;
++    std::vector<llama_moe_expert_read> reads;
+ 
+     // slot maps in host memory
+     ggml_context_ptr ctx_host;
+@@ -544,6 +653,7 @@ struct llama_moe_cache::impl {
+     }
+ 
+     ~impl() {
++        bulk_shutdown();
+         log_stats();
+     }
+ 
+@@ -600,6 +710,371 @@ struct llama_moe_cache::impl {
+         return n;
+     }
+ 
++    // upload the experts of fills to their slots, returns the bytes uploaded
++    // WS_PROF : où va le temps d'un token (cumul, affiché tous les 480 appels de copy() = 10 tokens de génération sur 48 couches)
++    double prof_ids = 0, prof_plan = 0, prof_src = 0, prof_up = 0, prof_all = 0; size_t prof_calls = 0, prof_reads = 0, prof_miss = 0, prof_hit = 0;
++    std::chrono::steady_clock::time_point prof_t0{};
++
++    // WS_LOOK measurement: how many of the experts selected in layer il (and of those missing from the VRAM cache) were in the first k predicted
++    std::vector<std::vector<int32_t>> look_pred;
++    std::vector<const ggml_tensor *> look_node;
++    std::vector<int32_t> look_miss_ids;
++    size_t look_pf_calls = 0, look_pf_experts = 0;
++    size_t look_n = 0, look_sel = 0, look_miss = 0;
++    size_t look_hit_sel[6] = {}, look_hit_miss[6] = {};
++    static constexpr int look_ks[6] = { 10, 12, 16, 20, 24, 32 };
++    void look_measure(int32_t il, group & g) {
++        if ((size_t) il >= look_pred.size() || look_pred[il].empty() || g.lru.slot_map[il] == nullptr) {
++            return;
++        }
++        const std::vector<int32_t> & p = look_pred[il];
++        look_n++;
++        for (int32_t e : ids) {
++            const bool miss = g.lru.slot_map[il][e] < 0;
++            look_sel++;
++            look_miss += miss;
++            for (int j = 0; j < 6; ++j) {
++                const size_t k = std::min<size_t>(look_ks[j], p.size());
++                if (std::find(p.begin(), p.begin() + k, e) != p.begin() + k) {
++                    look_hit_sel[j]++;
++                    look_hit_miss[j] += miss;
++                }
++            }
++        }
++        static const bool prof = std::getenv("WS_PROF") != nullptr;
++        if (prof && look_n % 2400 == 0) {
++            std::fprintf(stderr, "[ws_look] %zu layer-steps, %zu selected, %zu VRAM misses | recall of selected / of misses at k=", look_n, look_sel, look_miss);
++            for (int j = 0; j < 6; ++j) {
++                std::fprintf(stderr, " %d: %.0f%%/%.0f%%", look_ks[j], 100.0*look_hit_sel[j]/look_sel, 100.0*look_hit_miss[j]/std::max<size_t>(1, look_miss));
++            }
++            std::fputc(10, stderr);
++        }
++    }
++
++    size_t upload_fills(ggml_backend_t backend, const layer & l, group & g) {
++        reads.clear();
++        if (g_expert_source != nullptr && !fills.empty()) {
++            for (const ggml_tensor * w : l.experts) {
++                for (const auto & f : fills) {
++                    reads.push_back({w, f.expert, nullptr});
++                }
++            }
++            static const bool prof = std::getenv("WS_PROF") != nullptr;
++            const auto t0 = std::chrono::steady_clock::now();
++            const bool ok = g_expert_source(g_expert_source_user, reads.data(), reads.size()) &&
++                std::all_of(reads.begin(), reads.end(), [](const llama_moe_expert_read & r) { return r.data != nullptr; });
++            if (prof) {
++                prof_src += std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
++                prof_reads += reads.size();
++            }
++            if (!ok) {
++                reads.clear();
++            }
++        }
++
++        // consecutive experts going to consecutive slots are uploaded together
++        size_t bytes = 0;
++        for (size_t ip = 0; ip < l.experts.size() && !reads.empty(); ++ip) {
++            const size_t expert_size = l.experts[ip]->nb[2];
++            for (size_t i = 0; i < fills.size(); ++i) {
++                ggml_backend_tensor_set_async(backend, g.banks[ip], reads[ip*fills.size() + i].data, fills[i].slot*expert_size, expert_size);
++                bytes += expert_size;
++            }
++        }
++        for (size_t ip = 0; ip < l.experts.size() && reads.empty(); ++ip) {
++            const ggml_tensor * w    = l.experts[ip];
++            ggml_tensor       * bank = g.banks[ip];
++            const size_t expert_size = w->nb[2];
++            for (size_t i = 0; i < fills.size();) {
++                size_t n = 1;
++                while (i + n < fills.size() && fills[i + n].expert == fills[i].expert + (int32_t) n && fills[i + n].slot == fills[i].slot + (int32_t) n) {
++                    n++;
++                }
++                ggml_backend_tensor_set_async(backend, bank, (const uint8_t *) w->data + fills[i].expert*expert_size, fills[i].slot*expert_size, n*expert_size);
++                bytes += n*expert_size;
++                i += n;
++            }
++        }
++        return bytes;
++    }
++
++    // put experts of layer il in the cache before a decode, stops when no slot is free so nothing is evicted
++    size_t preload(int32_t il, const int32_t * experts, size_t n) {
++        if (il < 0 || il >= (int32_t) layers.size() || layers[il].ig < 0) {
++            return 0;
++        }
++        const layer & l = layers[il];
++        group & g = groups[l.ig];
++        if (g.lru.slot_map[il] == nullptr) {
++            return 0;
++        }
++        const size_t n_free = std::count(g.lru.key_of.begin(), g.lru.key_of.end(), -1);
++        ids.clear();
++        for (size_t i = 0; i < n && ids.size() < n_free; ++i) {
++            if (experts[i] >= 0 && experts[i] < g.lru.n_expert && g.lru.slot_map[il][experts[i]] < 0) {
++                ids.push_back(experts[i]);
++            }
++        }
++        size_t n_hit = 0;
++        if (ids.empty() || !g.lru.plan(il, ids.data(), ids.size(), 0, fills, n_hit)) {
++            return 0;
++        }
++        ggml_backend_t backend = devices[g.id].backend;
++        const size_t n_loaded = fills.size();
++        stats_small.bytes += upload_fills(backend, l, g);
++        ggml_backend_synchronize(backend);
++        return n_loaded;
++    }
++
++    // ---- bulk streaming of whole expert tensors, for the prefill of big batches ----
++    // a batch of hundreds of tokens uses nearly every expert of every layer: instead of one random read per expert, the expert tensors are read
++    // whole, in model order, by a reader thread that stays up to bulk_ring - 1 tensors ahead of the GPU, into pinned staging buffers
++    struct bulk_slot {
++        ggml_backend_buffer_ptr buf;
++        uint8_t * data = nullptr;
++        size_t    cap  = 0;
++        int64_t   idx  = -1;     // index in border of the tensor held
++        enum { Free, Queued, Reading, Ready, Failed, Uploaded } st = Free;
++        size_t    skew = 0;
++        ggml_backend_event_t ev = nullptr; // the upload from this slot has finished when it completes
++    };
++    std::vector<bulk_slot> bslots;
++    std::vector<const ggml_tensor *> border;
++    std::unordered_map<const ggml_tensor *, int64_t> bidx;
++    ggml_backend_t bbackend = nullptr;
++    std::thread bthread;
++    std::mutex bmu;
++    std::condition_variable bcv_work, bcv_done;
++    std::deque<int> bq;
++    bool bstop = false;
++    bool bready = false;    // staging buffers allocated
++    bool bdisabled = false;
++    size_t b_tensors = 0, b_bytes = 0, b_miss = 0;
++    double b_wait = 0, b_enq = 0;
++
++    static constexpr size_t bulk_align = 4096;
++    static constexpr int    bulk_ring  = 3;
++
++    void bulk_loop() {
++        std::unique_lock<std::mutex> lk(bmu);
++        for (;;) {
++            bcv_work.wait(lk, [&] { return bstop || !bq.empty(); });
++            if (bstop) {
++                return;
++            }
++            const int s = bq.front();
++            bq.pop_front();
++            bslots[s].st = bulk_slot::Reading;
++            const ggml_tensor * w = border[bslots[s].idx];
++            llama_moe_bulk_reader reader = g_bulk_reader;
++            void * user = g_bulk_reader_user;
++            uint8_t * data = bslots[s].data;
++            const size_t cap = bslots[s].cap;
++            lk.unlock();
++            size_t skew = 0;
++            const bool ok = reader != nullptr && reader(user, w->name, 0, ggml_nbytes(w), data, cap, &skew);
++            lk.lock();
++            bslots[s].skew = skew;
++            bslots[s].st   = ok ? bulk_slot::Ready : bulk_slot::Failed;
++            bcv_done.notify_all();
++        }
++    }
++
++    bool bulk_init(ggml_backend_t backend) {
++        if (bready) {
++            return true;
++        }
++        if (bdisabled) {
++            return false;
++        }
++        ggml_backend_dev_t dev = ggml_backend_get_device(backend);
++        ggml_backend_buffer_type_t buft = ggml_backend_dev_host_buffer_type(dev);
++        size_t max_bytes = 0;
++        for (const ggml_tensor * t : border) {
++            max_bytes = std::max(max_bytes, ggml_nbytes(t));
++        }
++        const size_t cap = GGML_PAD(max_bytes, bulk_align) + 2*bulk_align;
++        std::vector<bulk_slot> slots(bulk_ring);
++        for (bulk_slot & b : slots) {
++            b.buf.reset(buft ? ggml_backend_buft_alloc_buffer(buft, cap + bulk_align) : nullptr);
++            if (!b.buf) {
++                LLAMA_LOG_WARN("%s: cannot allocate %.0f MiB of pinned memory for bulk expert streaming, disabled\n", __func__, (cap + bulk_align)/1048576.0);
++                bdisabled = true;
++                return false;
++            }
++            b.data = (uint8_t *) GGML_PAD((uintptr_t) ggml_backend_buffer_get_base(b.buf.get()), bulk_align);
++            b.cap  = cap;
++            b.ev   = ggml_backend_event_new(dev);
++        }
++        {
++            std::lock_guard<std::mutex> lk(bmu);
++            bslots = std::move(slots);
++        }
++        bbackend = backend;
++        if (!bthread.joinable()) {
++            bthread = std::thread([this] { bulk_loop(); });
++        }
++        bready = true;
++        return true;
++    }
++
++    void bulk_wait_upload(bulk_slot & b) {
++        if (b.ev != nullptr) {
++            ggml_backend_event_synchronize(b.ev);
++        } else if (bbackend != nullptr) {
++            ggml_backend_synchronize(bbackend);
++        }
++    }
++
++    // a slot for a new read, bmu held: a free one, one whose upload is done, or a stale read-ahead (tensor before cur)
++    int bulk_take(int64_t cur) {
++        for (size_t i = 0; i < bslots.size(); ++i) {
++            if (bslots[i].st == bulk_slot::Free) {
++                return (int) i;
++            }
++        }
++        for (size_t i = 0; i < bslots.size(); ++i) {
++            bulk_slot & b = bslots[i];
++            const bool stale = (b.st == bulk_slot::Ready || b.st == bulk_slot::Failed) && b.idx < cur;
++            if (b.st == bulk_slot::Uploaded || stale) {
++                if (b.st == bulk_slot::Uploaded) {
++                    bulk_wait_upload(b);
++                }
++                b.st  = bulk_slot::Free;
++                b.idx = -1;
++                return (int) i;
++            }
++        }
++        return -1;
++    }
++
++    void bulk_queue(int s, int64_t idx) { // bmu held
++        bslots[s].idx = idx;
++        bslots[s].st  = bulk_slot::Queued;
++        bq.push_back(s);
++        bcv_work.notify_one();
++    }
++
++    bool bulk_upload(ggml_backend_t backend, const ggml_tensor * w, ggml_tensor * dst, int64_t n_used) {
++        static const bool off = std::getenv("WS_NO_BULK") != nullptr;
++        if (off || g_bulk_reader == nullptr || bdisabled || 2*n_used < w->ne[2] || ggml_nbytes(dst) != ggml_nbytes(w)) {
++            return false;
++        }
++        if (border.empty()) {
++            for (const layer & l : layers) {
++                if (l.ig >= 0) {
++                    for (const ggml_tensor * t : l.experts) {
++                        bidx[t] = (int64_t) border.size();
++                        border.push_back(t);
++                    }
++                }
++            }
++        }
++        const auto it = bidx.find(w);
++        if (it == bidx.end() || !bulk_init(backend)) {
++            return false;
++        }
++        const int64_t idx = it->second;
++        const auto now = []() { return std::chrono::steady_clock::now(); };
++        const auto t0 = now();
++        std::unique_lock<std::mutex> lk(bmu);
++        int s = -1;
++        for (size_t i = 0; i < bslots.size(); ++i) {
++            const bulk_slot & b = bslots[i];
++            if (b.idx == idx && (b.st == bulk_slot::Queued || b.st == bulk_slot::Reading || b.st == bulk_slot::Ready)) {
++                s = (int) i;
++            }
++        }
++        if (s < 0) { // not read ahead: the first tensor of a pass
++            s = bulk_take(idx);
++            if (s < 0) {
++                return false;
++            }
++            bulk_queue(s, idx);
++            ++b_miss;
++        }
++        bcv_done.wait(lk, [&] { return bslots[s].st == bulk_slot::Ready || bslots[s].st == bulk_slot::Failed; });
++        if (bslots[s].st == bulk_slot::Failed) {
++            bslots[s].st  = bulk_slot::Free;
++            bslots[s].idx = -1;
++            bdisabled = true; // the reader failed: the expert source takes over from now on
++            return false;
++        }
++        // read ahead the next tensors before the upload
++        for (int64_t k = 1; k < bulk_ring && idx + k < (int64_t) border.size(); ++k) {
++            const bool queued = std::any_of(bslots.begin(), bslots.end(), [&](const bulk_slot & b) {
++                return b.idx == idx + k && (b.st == bulk_slot::Queued || b.st == bulk_slot::Reading || b.st == bulk_slot::Ready);
++            });
++            if (queued) {
++                continue;
++            }
++            const int p = bulk_take(idx);
++            if (p < 0) {
++                break;
++            }
++            bulk_queue(p, idx + k);
++        }
++        const auto t1 = now();
++        const size_t nbytes = ggml_nbytes(w);
++        ggml_backend_tensor_set_async(backend, dst, bslots[s].data + bslots[s].skew, 0, nbytes);
++        if (bslots[s].ev != nullptr) {
++            ggml_backend_event_record(bslots[s].ev, backend);
++        }
++        bslots[s].st = bulk_slot::Uploaded;
++        const auto t2 = now();
++        b_wait += std::chrono::duration<double>(t1 - t0).count();
++        b_enq  += std::chrono::duration<double>(t2 - t1).count();
++        b_bytes += nbytes;
++        ++b_tensors;
++        if (std::getenv("WS_PROF") != nullptr && b_tensors % 12 == 0) {
++            std::fprintf(stderr, "[ws_bulk] %zu tensors, %.2f GiB | wait for reads %.2fs  enqueue %.2fs  not read ahead %zu\n", b_tensors, b_bytes/1073741824.0, b_wait, b_enq, b_miss);
++        }
++        return true;
++    }
++
++    void bulk_free_slots() { // bmu held, reader idle
++        for (bulk_slot & b : bslots) {
++            if (b.st == bulk_slot::Uploaded) {
++                bulk_wait_upload(b);
++            }
++            if (b.ev != nullptr) {
++                ggml_backend_event_free(b.ev);
++            }
++        }
++        bslots.clear();
++        bready = false;
++    }
++
++    // back to decoding: the staging memory goes back to the OS (the reader thread stays, asleep)
++    void bulk_release() {
++        if (!bready) {
++            return;
++        }
++        std::unique_lock<std::mutex> lk(bmu);
++        bcv_done.wait(lk, [&] { return bq.empty() && std::none_of(bslots.begin(), bslots.end(), [](const bulk_slot & b) { return b.st == bulk_slot::Reading; }); });
++        bulk_free_slots();
++        LLAMA_LOG_INFO("llama_moe_cache: bulk prefill: %zu expert tensors, %.2f GiB streamed, %.2f s waiting for the reads, %.2f s enqueueing uploads, %zu not read ahead\n",
++            b_tensors, b_bytes/1073741824.0, b_wait, b_enq, b_miss);
++        b_tensors = b_bytes = b_miss = 0; b_wait = b_enq = 0;
++    }
++
++    void bulk_shutdown() {
++        {
++            std::lock_guard<std::mutex> lk(bmu);
++            bstop = true;
++            bcv_work.notify_all();
++        }
++        if (bthread.joinable()) {
++            bthread.join();
++        }
++        std::lock_guard<std::mutex> lk(bmu);
++        if (b_tensors > 0) {
++            LLAMA_LOG_INFO("llama_moe_cache: bulk prefill: %zu expert tensors, %.2f GiB streamed, %.2f s waiting for the reads, %.2f s enqueueing uploads, %zu not read ahead\n",
++                b_tensors, b_bytes/1073741824.0, b_wait, b_enq, b_miss);
++        }
++        bulk_free_slots();
++    }
++
+     bool copy(ggml_backend_t backend, const ggml_tensor * src, ggml_tensor * dst, ggml_cgraph * graph) {
+         const auto it = layer_of.find(src);
+         if (it == layer_of.end()) {
+@@ -634,29 +1109,69 @@ struct llama_moe_cache::impl {
+         GGML_ASSERT(ggml_is_contiguous(sel));
+         GGML_ASSERT(sel->op == GGML_OP_RESHAPE); // of the [n_expert_used, n_tokens] ids, see build_moe_cache_slots
+ 
++        static const bool prof = std::getenv("WS_PROF") != nullptr;
++        const auto tp0 = std::chrono::steady_clock::now();
+         ids.resize(ggml_nelements(sel));
+         ggml_backend_tensor_get_async(backend, sel, ids.data(), 0, ggml_nbytes(sel));
++        // WS_LOOK: the experts predicted for the next layer, computed in this split by the router of the next layer
++        const ggml_tensor * look = (size_t) il < look_node.size() ? look_node[il] : nullptr;
++        std::vector<int32_t> look_now;
++        if (look != nullptr && ids.size() == (size_t) n_expert_used) {
++            look_now.resize(ggml_nelements(look));
++            ggml_backend_tensor_get_async(backend, look, look_now.data(), 0, ggml_nbytes(look));
++        }
+         ggml_backend_synchronize(backend);
++        const auto tp1 = std::chrono::steady_clock::now();
++        look_measure(il, g);
++        const int32_t D = g_lookdist;
++        if (g_expert_prefetch != nullptr && !look_now.empty() && (size_t) il + D < layers.size() && layers[il + D].ig >= 0) {
++            // the next layer's predicted experts that are not in the VRAM cache: read them while the GPU computes this layer
++            const int32_t * sm = groups[layers[il + D].ig].lru.slot_map[il + D];
++            if (sm != nullptr) {
++                look_miss_ids.clear();
++                for (int32_t e : look_now) {
++                    if (e >= 0 && sm[e] < 0) {
++                        look_miss_ids.push_back(e);
++                    }
++                }
++                if (!look_miss_ids.empty()) {
++                    g_expert_prefetch(g_expert_prefetch_user, il + D, look_miss_ids.data(), look_miss_ids.size());
++                    look_pf_calls++; look_pf_experts += look_miss_ids.size();
++                }
++            }
++        }
++        if (!look_now.empty()) {
++            if (look_pred.size() <= (size_t) il + D) { look_pred.resize(layers.size() + 1); }
++            look_pred[il + D] = std::move(look_now);
++        } else if ((size_t) il + D < look_pred.size()) {
++            look_pred[il + D].clear();
++        }
++
++        if (g_expert_observer != nullptr) {
++            g_expert_observer(g_expert_observer_user, il, ids.data(), ids.size());
++        }
++        if (bready && ids.size() <= (size_t) 8*n_expert_used) {
++            bulk_release(); // decoding again: the staging memory goes back
++        }
+ 
+         size_t n_hit = 0;
+         if (!g.lru.plan(il, ids.data(), ids.size(), sel->src[0]->ne[1], fills, n_hit)) {
+             GGML_ABORT("the MoE cache is too small for the experts selected in layer %d", il);
+         }
+ 
+-        // upload the missing experts, consecutive experts going to consecutive slots are uploaded together
+-        size_t bytes = 0;
+-        for (size_t ip = 0; ip < l.experts.size(); ++ip) {
+-            const ggml_tensor * w    = l.experts[ip];
+-            ggml_tensor       * bank = g.banks[ip];
+-            const size_t expert_size = w->nb[2];
+-            for (size_t i = 0; i < fills.size();) {
+-                size_t n = 1;
+-                while (i + n < fills.size() && fills[i + n].expert == fills[i].expert + (int32_t) n && fills[i + n].slot == fills[i].slot + (int32_t) n) {
+-                    n++;
+-                }
+-                ggml_backend_tensor_set_async(backend, bank, (const uint8_t *) w->data + fills[i].expert*expert_size, fills[i].slot*expert_size, n*expert_size);
+-                bytes += n*expert_size;
+-                i += n;
++        const auto tp2 = std::chrono::steady_clock::now();
++        // the backend was synchronized above, so the previous reads of the expert source are no longer in use
++        const size_t bytes = upload_fills(backend, l, g);
++        if (prof && ids.size() <= (size_t) 8*n_expert_used) {
++            const auto tp3 = std::chrono::steady_clock::now();
++            auto d = [](auto a, auto b) { return std::chrono::duration<double>(b - a).count(); };
++            if (prof_calls == 0) { prof_t0 = tp0; }
++            prof_ids += d(tp0, tp1); prof_plan += d(tp1, tp2); prof_up += d(tp2, tp3); prof_miss += fills.size(); prof_hit += n_hit;
++            if (++prof_calls % 480 == 0) {
++                const double wall = d(prof_t0, tp3);
++                std::fprintf(stderr, "[ws_prof] 10 tokens: wall %.2fs | attente ids (GPU vide) %.2fs | plan %.3fs | upload %.2fs dont lecture source %.2fs (%zu lectures) | miss %zu hit %zu\n",
++                    wall, prof_ids, prof_plan, prof_up, prof_src, prof_reads, prof_miss, prof_hit);
++                prof_ids = prof_plan = prof_up = prof_src = 0; prof_reads = prof_miss = prof_hit = 0; prof_calls = 0;
+             }
+         }
+ 
+@@ -694,6 +1209,17 @@ llama_moe_cache::llama_moe_cache(const llama_model & model, bool no_alloc, const
+ 
+ llama_moe_cache::~llama_moe_cache() = default;
+ 
++void llama_moe_cache::set_look(int32_t il, const ggml_tensor * pred) const {
++    if (pimpl->look_node.size() <= (size_t) il) {
++        pimpl->look_node.resize(pimpl->layers.size() + 1, nullptr);
++    }
++    pimpl->look_node[il] = pred;
++}
++
++bool llama_moe_cache::bulk_upload(ggml_backend_t backend, const ggml_tensor * w, ggml_tensor * dst, int64_t n_used) {
++    return pimpl->bulk_upload(backend, w, dst, n_used);
++}
++
+ ggml_backend_t llama_moe_cache::backend(int32_t il) const {
+     return pimpl->backend(il);
+ }
+@@ -714,6 +1240,10 @@ int64_t llama_moe_cache::copy_experts(ggml_backend_t backend, const ggml_tensor
+     return pimpl->copy_experts(backend, w, dst, e, last);
+ }
+ 
++size_t llama_moe_cache::preload(int32_t il, const int32_t * experts, size_t n) {
++    return pimpl->preload(il, experts, n);
++}
++
+ std::map<ggml_backend_buffer_type_t, size_t> llama_moe_cache::memory_breakdown() const {
+     std::map<ggml_backend_buffer_type_t, size_t> res;
+     for (const auto & d : pimpl->devices) {
+diff --git a/src/llama-moe-cache.h b/src/llama-moe-cache.h
+index 6c8e3658..8d749275 100644
+--- a/src/llama-moe-cache.h
++++ b/src/llama-moe-cache.h
+@@ -25,6 +25,9 @@ public:
+     // the experts of w in the cache, nullptr if w is not cached
+     ggml_tensor * get_experts(const ggml_tensor * w) const;
+ 
++    // the graph node holding the experts predicted for layer il + 1 (set when the graph is built)
++    void set_look(int32_t il, const ggml_tensor * pred) const;
++
+     // ggml_backend_sched copy callback, returns false if src is not a slot map
+     bool copy(ggml_backend_t backend, const ggml_tensor * src, ggml_tensor * dst, ggml_cgraph * graph);
+ 
+@@ -32,6 +35,13 @@ public:
+     // returns the number of experts copied, 0 if expert e is not in the cache
+     int64_t copy_experts(ggml_backend_t backend, const ggml_tensor * w, ggml_tensor * dst, int64_t e, int64_t last);
+ 
++    // for large batches that use at least half of the experts of w: streams the whole tensor w from the bulk reader (read ahead for the next tensors)
++    // and uploads it to the copy dst of w; returns false if it cannot, the caller then uploads the used experts one by one
++    bool bulk_upload(ggml_backend_t backend, const ggml_tensor * w, ggml_tensor * dst, int64_t n_used);
++
++    // upload experts of layer il to free slots before a decode, returns how many were loaded
++    size_t preload(int32_t il, const int32_t * experts, size_t n);
++
+     std::map<ggml_backend_buffer_type_t, size_t> memory_breakdown() const;
+ 
+ private:
+@@ -40,3 +50,11 @@ private:
+ };
+ 
+ using llama_moe_cache_ptr = std::unique_ptr<llama_moe_cache>;
++
++// for large batches: uploads the experts [first, last_excl) of w to dst (its copy on the device) through the expert source, in slices
++// of at most the source limit, waiting for each slice to land before the source is called again
++// returns false when there is no expert source (the caller then reads tensor->data)
++bool llama_moe_source_upload(ggml_backend_t backend, const ggml_tensor * w, ggml_tensor * dst, int64_t first, int64_t last_excl);
++
++// see llama_moe_set_lookahead
++int llama_moe_get_lookahead(int * distance);

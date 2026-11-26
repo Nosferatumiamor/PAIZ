@@ -1,0 +1,23 @@
+[package]
+name = "paiz"
+version = "0.3.1"
+description = "PAIZ — The AI Models Dispenser"
+authors = ["PAIZ"]
+edition = "2021"
+rust-version = "1.77"
+
+[[bin]]
+name = "PAIZ-WeightStream"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[profile.release]
+codegen-units = 1
+opt-level = "s"
+strip = true
+lto = false

@@ -1,0 +1,26 @@
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --load-mode none for better performance
+....................................................................................................
+[startup] global profile: 3727 experts (11181 slices) preloaded in 6.2 s
+[ 1] code       -> code* (0.78)           prompt  38 tok  4.19 tok/s | gen  64 tok  5.50 tok/s | profile 100%
+[ 2] histoire   -> histoire* (0.80)       prompt  27 tok  4.62 tok/s | gen  64 tok  8.90 tok/s | profile 100%
+[ 3] calcul     -> calcul* (0.81)         prompt  37 tok  6.06 tok/s | gen  64 tok  5.50 tok/s | profile 100%
+[ 4] discussion -> discussion* (0.83)     prompt  29 tok  5.23 tok/s | gen  64 tok  9.10 tok/s | profile 100%
+[ 5] sciences   -> sciences* (0.71)       prompt  21 tok  5.78 tok/s | gen  64 tok  7.87 tok/s | profile 100%
+[ 6] traduction -> traduction* (0.77)     prompt  28 tok  5.97 tok/s | gen  13 tok  3.38 tok/s | profile 100%
+[ 7] code       -> code* (0.81)           prompt  33 tok  5.25 tok/s | gen  64 tok  4.19 tok/s | profile 100%
+[ 8] histoire   -> histoire* (0.83)       prompt  33 tok  5.41 tok/s | gen  64 tok  7.04 tok/s | profile 100%
+[ 9] calcul     -> calcul* (0.78)         prompt  36 tok  5.62 tok/s | gen  64 tok  5.73 tok/s | profile 100%
+[10] discussion -> discussion* (0.74)     prompt  26 tok  5.04 tok/s | gen  64 tok  6.47 tok/s | profile 100%
+[11] sciences   -> sciences* (0.70)       prompt  17 tok  5.12 tok/s | gen  64 tok  6.89 tok/s | profile 100%
+[12] traduction -> traduction* (0.84)     prompt  33 tok  5.15 tok/s | gen  18 tok  4.65 tok/s | profile 100%
+[13] code       -> code* (0.76)           prompt  34 tok  5.77 tok/s | gen  64 tok  5.30 tok/s | profile 100%
+[14] histoire   -> histoire* (0.82)       prompt  28 tok  5.24 tok/s | gen  64 tok  7.13 tok/s | profile 100%
+[15] calcul     -> calcul* (0.79)         prompt  39 tok  4.96 tok/s | gen  64 tok  4.27 tok/s | profile 100%
+[16] discussion -> discussion* (0.72)     prompt  33 tok  4.85 tok/s | gen  64 tok  6.42 tok/s | profile 100%
+[17] sciences   -> sciences* (0.73)       prompt  25 tok  6.12 tok/s | gen  64 tok  7.97 tok/s | profile 100%
+[18] traduction -> traduction* (0.85)     prompt  31 tok  5.75 tok/s | gen  18 tok  4.42 tok/s | profile 100%
+llama_moe_cache: ubatch <= 8: hits = 422445, misses = 69806, hit rate = 85.82%, uploaded = 126888.87 MiB
+llama_moe_cache: ubatch  > 8: hits = 15752, misses = 56728, hit rate = 21.73%, uploaded = 102944.16 MiB
+
+mode domain | prompt 5.27 tok/s | gen 6.07 tok/s | RAM hit 31.7% | disk 154.4 GiB in 157.3 s waited | preload 56.0 GiB

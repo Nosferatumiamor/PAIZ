@@ -1,0 +1,25 @@
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --load-mode none for better performance
+....................................................................................................
+[ 1] code       -> -                      prompt  38 tok  3.26 tok/s | gen  64 tok  6.27 tok/s | profile   0%
+[ 2] histoire   -> -                      prompt  27 tok  4.80 tok/s | gen  64 tok 10.74 tok/s | profile   0%
+[ 3] calcul     -> -                      prompt  37 tok  5.70 tok/s | gen  64 tok  7.16 tok/s | profile   0%
+[ 4] discussion -> -                      prompt  29 tok  5.10 tok/s | gen  64 tok 11.78 tok/s | profile   0%
+[ 5] sciences   -> -                      prompt  21 tok  5.08 tok/s | gen  64 tok 10.83 tok/s | profile   0%
+[ 6] traduction -> -                      prompt  28 tok  5.79 tok/s | gen  13 tok  7.42 tok/s | profile   0%
+[ 7] code       -> -                      prompt  33 tok  6.60 tok/s | gen  64 tok  6.33 tok/s | profile   0%
+[ 8] histoire   -> -                      prompt  33 tok  5.09 tok/s | gen  64 tok  8.79 tok/s | profile   0%
+[ 9] calcul     -> -                      prompt  36 tok  5.95 tok/s | gen  64 tok  8.87 tok/s | profile   0%
+[10] discussion -> -                      prompt  26 tok  5.27 tok/s | gen  64 tok  8.86 tok/s | profile   0%
+[11] sciences   -> -                      prompt  17 tok  4.81 tok/s | gen  64 tok  8.78 tok/s | profile   0%
+[12] traduction -> -                      prompt  33 tok  5.73 tok/s | gen  18 tok 10.44 tok/s | profile   0%
+[13] code       -> -                      prompt  34 tok  7.72 tok/s | gen  64 tok  7.91 tok/s | profile   0%
+[14] histoire   -> -                      prompt  28 tok  5.56 tok/s | gen  64 tok 10.07 tok/s | profile   0%
+[15] calcul     -> -                      prompt  39 tok  4.81 tok/s | gen  64 tok  6.20 tok/s | profile   0%
+[16] discussion -> -                      prompt  33 tok  4.89 tok/s | gen  64 tok 10.90 tok/s | profile   0%
+[17] sciences   -> -                      prompt  25 tok  5.76 tok/s | gen  64 tok  9.93 tok/s | profile   0%
+[18] traduction -> -                      prompt  31 tok  5.78 tok/s | gen  18 tok  8.49 tok/s | profile   0%
+llama_moe_cache: ubatch <= 8: hits = 422445, misses = 69806, hit rate = 85.82%, uploaded = 126888.87 MiB
+llama_moe_cache: ubatch  > 8: hits = 15752, misses = 56728, hit rate = 21.73%, uploaded = 102944.16 MiB
+
+mode none   | prompt 5.26 tok/s | gen 8.53 tok/s | RAM hit 26.2% | disk 166.7 GiB in 144.0 s waited | preload 0.0 GiB

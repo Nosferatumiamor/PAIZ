@@ -1,0 +1,88 @@
+build/
+build-*/
+out/
+cmake-build-*/
+.vs/
+.vscode/
+*.user
+*.suo
+*.obj
+*.o
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+*.gguf.bak
+
+# Local model files (too large for git)
+models/*
+!models/.gitkeep
+!models/README.md
+
+# Python layer-prefetch PoC
+python/.venv/
+# third-party PoC clone (github.com/SergiuDeveloper/llm-layer-prefetch); local changes in Docs/patches/
+python/layer_prefetch/_upstream/
+__pycache__/
+*.pyc
+
+# Portable CMake (~50 Mo, optional)
+tools/cmake/
+
+*.wsprofile
+
+# Local benchmark/report output
+reports/
+
+# build and tool logs
+*.log
+ws_npc_data/
+ws_npc_data_dev*/
+
+# --- Ajouts nov. 2026 : poubelles locales, secrets, gros fichiers ---
+# Poids de modèles sous toutes leurs formes (jamais dans git)
+*.gguf
+*.safetensors
+*.bin
+*.ckpt
+*.pt
+*.pth
+*.onnx
+!models/README.md
+# Secrets / environnement
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+secrets*.json
+# Données locales des services (fils de conversation, KV, états)
+ws_npc_data*/
+*.kv
+*.slotstate
+# Dossiers d'outils et de session
+.claude/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.swp
+*~
+# Rapports / traces de mesure et dumps
+reports/
+*.csv.tmp
+*.trace
+*.dmp
+# Fichier parasite créé par un chemin Windows mal échappé (C:\llm-work...)
+C:*
+# Python
+.pytest_cache/
+*.egg-info/
+# Node (outils compagnons)
+node_modules/
+

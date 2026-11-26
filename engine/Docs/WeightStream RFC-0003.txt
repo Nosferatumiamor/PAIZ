@@ -1,0 +1,463 @@
+WeightStream
+
+    
+    RFC-0003 — Virtual Tensor Address Space (VTAS) et Modèle de Données
+
+    Version : 0.1 (Draft)
+
+    
+
+    
+    
+    
+    1. Objectif
+
+    WeightStream ne doit jamais manipuler directement un format de modèle particulier.
+
+    Il doit manipuler une représentation universelle des données.
+
+    Cette représentation est appelée Virtual Tensor Address Space (VTAS).
+
+    Le VTAS est au modèle IA ce que la mémoire virtuelle est à un système d’exploitation.
+
+    Le moteur ne manipule plus des offsets dans un fichier GGUF.
+
+    Il manipule uniquement des adresses virtuelles.
+
+    
+
+    
+    
+    2. Philosophie
+
+    Un tensor n’a pas de localisation physique.
+
+    Il possède uniquement une identité.
+
+    À tout instant, il peut se trouver :
+
+    uniquement sur SSD ;
+
+    dans un cache RAM ;
+
+    en VRAM ;
+
+    simultanément à plusieurs endroits.
+
+    Le moteur ne fait aucune différence.
+
+    
+
+    
+    
+    3. Architecture
+
+                 Applications                    │             WeightStream API                    │      Virtual Tensor Address Space                    │     ┌──────────────┼──────────────┐ GGUF Loader   SafeTensors   Future Loader     │              │     └──────────────┼──────────────┘               Stockage réel
+
+    
+
+    
+    
+    4. Adresse virtuelle
+
+    Chaque tensor reçoit une adresse virtuelle de 64 bits.
+
+    Exemple :
+
+    VirtualTensorAddress{    uint64_t value;};
+
+    Cette adresse ne change jamais.
+
+    Même si le tensor est déplacé.
+
+    
+
+    
+    
+    5. Métadonnées
+
+    Chaque tensor possède une fiche descriptive.
+
+    TensorDescriptor{    VirtualTensorAddress address;    std::string name;    uint64_t size;    TensorType type;    uint32_t alignment;    uint64_t physicalOffset;}
+
+    Cette structure est permanente.
+
+    
+
+    
+    
+    6. Les Backends
+
+    Le VTAS ne connaît pas le stockage.
+
+    Il interroge uniquement des Backends.
+
+    Exemple :
+
+    SSD BackendRAM BackendVRAM Backend
+
+    Tous implémentent la même interface.
+
+    Read()Write()Exists()Reserve()Release()
+
+    
+
+    
+    
+    7. États
+
+    Chaque tensor possède un état logique.
+
+    NOT_PRESENTSSD_ONLYRAM_READYGPU_READYIN_USEEVICTING
+
+    Ces états sont indépendants du backend.
+
+    
+
+    
+    
+    8. Découpage
+
+    WeightStream ne suppose jamais qu’un tensor est indivisible.
+
+    Un tensor peut être découpé.
+
+    Exemple :
+
+    Tensor↓Chunk 0Chunk 1Chunk 2Chunk 3
+
+    Cette granularité est configurable.
+
+    
+
+    
+    
+    9. Chunks
+
+    Chaque chunk possède :
+
+    ChunkDescriptor{    parentTensor;    chunkIndex;    size;    offset;}
+
+    Le Scheduler peut streamer les chunks indépendamment.
+
+    
+
+    
+    
+    10. Pourquoi découper ?
+
+    Les gros tensors dépassent parfois plusieurs centaines de mégaoctets.
+
+    Les transférer intégralement augmente la latence.
+
+    Le découpage permet :
+
+    le streaming progressif ;
+
+    le préchargement ;
+
+    la parallélisation ;
+
+    une meilleure occupation PCIe.
+
+    
+
+    
+    
+    11. Regroupement
+
+    À l’inverse, plusieurs petits tensors peuvent être regroupés.
+
+    Exemple :
+
+    Tensor ATensor BTensor C↓Streaming Group
+
+    Cela réduit les appels système.
+
+    
+
+    
+    
+    12. Streaming Groups
+
+    Le Scheduler manipule principalement des groupes.
+
+    Exemple :
+
+    StreamingGroup{    vector<Tensor>    totalSize    priority}
+
+    
+
+    
+    
+    13. Granularité dynamique
+
+    Le moteur peut décider automatiquement.
+
+    Exemple :
+
+    Petit tensor
+
+    ↓
+
+    groupe
+
+    Grand tensor
+
+    ↓
+
+    chunks
+
+    Il n’existe pas de taille fixe.
+
+    
+
+    
+    
+    14. Mapping
+
+    Le VTAS maintient une table.
+
+    Adresse virtuelle↓Backend↓Position réelle
+
+    Exemple :
+
+    0x004520↓RAM↓0xA300000
+
+    Quelques millisecondes plus tard :
+
+    0x004520↓VRAM↓0x8800000
+
+    L’adresse virtuelle n’a jamais changé.
+
+    
+
+    
+    
+    15. Cache multi-niveaux
+
+    Le même tensor peut exister :
+
+    SSDRAMVRAM
+
+    Le Scheduler choisit simplement lequel utiliser.
+
+    
+
+    
+    
+    16. Références
+
+    Les composants ne manipulent jamais directement des pointeurs GPU.
+
+    Ils manipulent :
+
+    TensorHandle
+
+    Le Handle est résolu par le Backend.
+
+    
+
+    
+    
+    17. Vie d’un tensor
+
+    Création↓Adresse virtuelle↓Lecture SSD↓RAM↓VRAM↓GPU↓Retour RAM↓Éviction SSD uniquement
+
+    L’identité reste constante.
+
+    
+
+    
+    
+    18. Intégration GGUF
+
+    Le Loader GGUF ne fait qu’une chose.
+
+    Transformer :
+
+    Offset physique
+
+    en
+
+    Adresse virtuelle
+
+    Le reste du moteur ignore totalement le format GGUF.
+
+    
+
+    
+    
+    19. Intégration future
+
+    De nouveaux formats deviennent simples.
+
+    Exemple :
+
+    GGUF↓VTAS↓WeightStream
+
+    ou
+
+    SafeTensors↓VTAS↓WeightStream
+
+    Le Scheduler reste identique.
+
+    
+
+    
+    
+    20. Préchargement
+
+    Le Scheduler travaille exclusivement avec des adresses virtuelles.
+
+    Exemple :
+
+    0x10520↓0x10521↓0x10522
+
+    Il ignore leur localisation réelle.
+
+    
+
+    
+    
+    21. Statistiques
+
+    Chaque tensor conserve son historique.
+
+    lastAccessaccessCountaverageLoadTimeaverageGpuTimereuseProbability
+
+    Ces informations servent au Scheduler.
+
+    
+
+    
+    
+    22. Tensor Temperature
+
+    Chaque tensor possède une température.
+
+    Exemple :
+
+    HOTWARMCOLD
+
+    HOT
+
+    reste en VRAM.
+
+    WARM
+
+    reste en RAM.
+
+    COLD
+
+    retour SSD.
+
+    La température est calculée automatiquement.
+
+    
+
+    
+    
+    23. Localité
+
+    Le Scheduler cherche à conserver proches les tensors souvent utilisés ensemble.
+
+    Cette notion est appelée :
+
+    Tensor Locality.
+
+    Elle réduit les lectures aléatoires.
+
+    
+
+    
+    
+    24. Fragmentation
+
+    Le VTAS surveille la fragmentation mémoire.
+
+    Si nécessaire :
+
+    déplacement des blocs ;
+
+    regroupement ;
+
+    compactage.
+
+    L’objectif est d’éviter les échecs d’allocation.
+
+    
+
+    
+    
+    25. Résilience
+
+    Les opérations sont transactionnelles.
+
+    Exemple :
+
+    Reserve↓Upload↓Validation↓Commit
+
+    En cas d’échec :
+
+    Rollback.
+
+    Le moteur continue de fonctionner.
+
+    
+
+    
+    
+    26. Compatibilité future
+
+    Le VTAS doit permettre un jour :
+
+    SSD locaux
+
+    RAM distante
+
+    GPU réseau
+
+    stockage distribué
+
+    Sans modifier l’API.
+
+    
+
+    
+    
+    27. Cas des modèles Mixture of Experts
+
+    Les modèles MoE constituent un cas particulièrement intéressant.
+
+    Dans un modèle dense classique, presque tous les tensors sont utilisés à chaque token.
+
+    Dans un modèle MoE, seule une fraction des experts est activée.
+
+    Le VTAS permet de traiter chaque expert comme une ressource indépendante.
+
+    Les experts inactifs peuvent rester sur SSD ou en RAM, tandis que les experts les plus sollicités restent en VRAM.
+
+    Cette approche ouvre la voie à l’exécution de modèles MoE très volumineux sur du matériel grand public.
+
+    
+
+    
+    
+    28. Vision à long terme
+
+    Le Virtual Tensor Address Space transforme les poids d’un modèle en objets virtuels indépendants de leur support physique.
+
+    Cette abstraction permet de séparer totalement :
+
+    le format des modèles ;
+
+    les politiques de cache ;
+
+    les stratégies de streaming ;
+
+    les mécanismes d’inférence.
+
+    WeightStream devient ainsi une couche universelle de gestion mémoire pour modèles d’intelligence artificielle.
+
+    À terme, un moteur d’inférence ne demandera plus “charge ce tensor depuis un fichier”, mais simplement “donne-moi le tensor associé à cette adresse virtuelle”, laissant à WeightStream la responsabilité complète de son acheminement, de son cache et de son optimisation.

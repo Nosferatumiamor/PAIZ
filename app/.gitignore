@@ -1,0 +1,8 @@
+node_modules/
+.data/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/resources/
+*.log
+.env
+.env.*

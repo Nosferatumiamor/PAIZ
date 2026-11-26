@@ -1,0 +1,330 @@
+330	Last used
+331	last copy of the model folders
+332	Last time
+333	Last modified
+334	Last request seen:
+335	Latest remote errors
+336	Latest operations done by the dispenser.
+337	engines are running without PAIZ and taking memory
+338	of active skills are added to the prompt. A skill can contain scripts the model will run: only install sources you know. Everything installs
+339	disabled
+340	disabled: the model doesn't see it
+341	disabled. The model cannot call a removed tool; tick it again and it comes back on the next request.
+342	Destination
+343	Details
+344	details ▸
+345	Detected: Node
+346	Tell the model: “sum up the ideas we had” · “note this idea: …” · “turn the discussion into a brief and note it”
+347	Conversation passed on
+348	questionable: little or no longer used, or not enough hindsight yet
+349	Chat with the loaded model, without a project or session
+350	Disks
+351	Fixed and removable disks, plus the HuggingFace / LM Studio caches. Can be cancelled at any time.
+352	Data & API
+353	folder
+354	Folder _PAIZ/trace.json present
+355	Destination folder
+356	Destination folder, e.g. F:\\Backups
+357	Engine folder
+358	Project folder, e.g. D:/005-GIT/my-project
+359	WeightStream folder
+360	Folder, e.g. D:/005-GIT/my-project
+361	folder(s) visited ·
+362	AI app folders detected, to confirm
+363	Folders set (
+364	Double-click to rename
+365	Duplicates
+366	duplicates, caches, leftovers and never-used models
+367	failed
+368	Failed.
+369	eco: least RAM/VRAM, slowest · dialogue: lean (Gemma ≈ 13 tok/s, ≈ 7.4 GB VRAM) · vif: ≈ 22 tok/s · rapide: ≈ 43 tok/s (≈ 10 GB VRAM) · confort: faster · background task: giants in the background · cpu: no expert in VRAM · shared / full: caches sized from the RAM and VRAM actually free, then regulated during generation (shared leaves room for other programs) · steps: cache size chosen at the start of each message from free RAM, then fixed during generation
+370	Work screen, every 10 minutes and at
+371	Write a message below to test the loaded model. Nothing is kept in a session.
+372	writing
+373	Writing
+374	Stable
+375	clean stable
+376	Clean stable
+377	Erases for good, no trash
+378	Direct erase of the ACTIVE copy (the storage copy is verified identical): space comes back right away
+379	Direct erase, space comes back right away
+380	Clear
+381	Erase PERMANENTLY
+382	Erase for good?
+383	Erase its conversations for good
+384	erase directly, no trash (cannot be undone, like Shift+Del)
+385	Item
+386	item(s)
+387	item(s): temporary files, interrupted downloads, empty folders
+388	item(s) ·
+389	item(s) removed (
+390	It goes into the queue, or stays as a draft if you want to review it first. A model other than the chat one starts alongside, for the time of the queue.
+391	Location
+392	Locations in use
+393	As a draft
+394	chooses none for you. Set them in
+395	Paused · resume point saved
+396	In reserve
+397	text encoder
+398	Text encoders, VAEs, CLIP vision: a single copy on disk, made visible in each program's folder (hard link on the same disk, symbolic link across disks) so they are not downloaded again with every main model.
+399	encoders, VAEs… visible to every app without duplicates
+400	Saved.
+401	Save
+402	Save this folder as a managed root
+403	Listing local volumes. The scan will start in gentle mode.
+404	Sends the model to a storage repo (verified move)
+405	Send this text as a brief to the big local model (task queue)
+406	Error:
+407	Test unavailable for a remote server
+408	Try the new, simpler interface (you can come back to this one from its Settings)
+409	is plugged into PAIZ: these models go through
+410	is running (separate window).
+411	is possible. The limits of
+412	next step remembered
+413	State
+414	Status read from Windows (SMART / reliability counters). Don't keep anything important on a disk “to watch”.
+415	Turn these tools off
+416	Are you sure? This erase is PERMANENT: the file does not go through the trash and cannot be recovered.
+417	label for details.
+418	Labels
+419	ws_npc_server executable
+420	runs code on your machine
+421	Explores a disk or folder and indexes everything that looks like an AI model. Files found outside a root are marked “unmanaged”: you can adopt them afterwards.
+422	external — external folder
+423	Make a lighter version of this model (lossy)
+424	Turn this repo into a clean stable
+425	Make room
+426	Have a model write a plan from this conversation (it lands as a draft in the task bar)
+427	Have the project memory remember this message
+428	Close
+429	Close this message
+430	Close this project
+431	Close this conversation
+432	Close the preview
+433	Close…
+434	File
+435	File to download
+436	file(s) · up to
+437	file(s) to tidy (
+438	file(s) into the clean tree? Instant renames on the same disk, nothing is erased, a log lets you undo.
+439	file(s) skipped
+440	file(s) freed (
+441	-
+442	Files added as “unmanaged”: you can adopt them below.
+443	Related files
+444	Filter:
+445	Times
+446	Works with the official library, tool calls included.
+447	Format “
+448	merged
+449	keep the
+450	Keeps repositories that have at least one quantisation of this size or smaller
+451	Keeps a single copy on disk, BUT every path keeps working (hard link): nothing breaks for SwarmUI, ComfyUI, etc. Same disk required; content checked byte by byte.
+452	Keep this copy and move the others to the trash
+453	Keep the first one
+454	Manage repos…
+455	Management:
+456	GGUF only
+457	Drag to adjust the width (double-click: default)
+458	GB
+459	GB to free
+460	GB depending on quantisation
+461	Groups of identical files found in several places. Click: open the Duplicates tab.
+462	-
+463	Hugging Face, PyTorch, Whisper, Coqui TTS, llama.cpp… Apps download again what they still need; Ollama, LM Studio, GPT4All and Jan are listed separately (they are real models).
+464	Hugging Face, PyTorch…: whatever is still used will be downloaded again
+465	idea
+466	Idea saved.
+467	identity
+468	Ignore
+469	They will be installed disabled. A skill can contain scripts: check the source.
+470	image · video
+471	image · video · other
+472	Images and video
+473	Importance (4-5: always recalled)
+474	important: called recently (or a basic tool)
+475	Enter a folder to scan.
+476	Enter a folder.
+477	Install
+478	Interface
+479	interface is reinstalled. Folders are never deleted
+480	-
+481	useless: never called since the start of this conversation
+482	Invert
+483	Never
+484	never called
+485	never used
+486	Never used
+487	tokens kept
+488	Attach images
+489	Log
+490	days of tracking, “star” at
+491	days without use, “never used” after
+492	To the end (recommended)
+493	the current step finishes
+494	PAIZ's eye is looking at the image, then reading the prompt
+495	The graphics card is faster. RAM leaves the card free for a game or another app. Adaptive follows the machine's free memory.
+496	The trash is empty.
+497	The extra-light version of this model doesn't exist yet.
+498	Start a conversation (Work screen or OpenCode): the list of tools actually sent to the model shows up here.
+499	Launch at startup turned off.
+500	Launch
+501	Launch when PAIZ starts
+502	Launch the last model used when PAIZ opens
+503	Start the transfer
+504	The last model will load when PAIZ starts.
+505	The last model will launch when PAIZ starts.
+506	The folder is created if it doesn't exist. Nothing is moved or deleted: PAIZ watches it and tidies models into it when you ask. A model already in this folder appears after a scan.
+507	The file exists but its folder is no longer a repo
+508	The file no longer exists: remove it from the index
+509	The model
+510	The model (
+511	The engine starts as soon as PAIZ opens (if free memory allows): the model is ready when you arrive. Same setting as on the Work screen.
+512	The mustached one
+513	The program is stopped right away; what it had in memory is lost.
+514	Léa
+515	Drives:
+516	Reading the disks…
+517	Reading files…
+518	Reading the catalogue…
+519	reading the prompt
+520	Reading the prompt
+521	Reading the prompt, writing the answer, then total time (from the request to the end)
+522	Reading…
+523	Light
+524	Léo
+525	the last 12 messages
+526	the last 30 messages
+527	the last 6 messages
+528	The work SSD folders where models are loaded (fast). You can set several: for example C:\\llm-models and another folder.
+529	The folders where you keep models you don't use right now: hard disk, external disk… speed hardly matters.
+530	Files in an existing root stay attached; the others are “unmanaged” and appear below.
+531	The most recently tidied or summoned are at the top.
+532	Free up → trash
+533	Free up → erase the active copy
+534	Free up space on active repos
+535	freed.
+536	-
+537	free only. Choose a lighter file or another destination.
+538	Link created (
+539	-
+540	link(s) to the existing copies? No file is copied or deleted; each link can be replaced by a real copy later.
+541	Linked
+542	Likes
+543	Detailed list
+544	LLM/&lt;family&gt;/&lt;model&gt;/
+545	LOCAL MODELS
+546	Read (input)
+547	Manual
+548	Same disk: moves are instant renames (no copy, no risk to the files). The log lets you undo.
+549	Same quick fingerprint (size + start + end of file) on one or more disks. By default files go to the Windows trash of their own disk (empty it to free the space). Tick the box to erase them directly.
+550	Same file elsewhere
+551	Same repo for all
+552	Memory: what the assistants remember about the project and about you
+553	Active memory
+554	Conversation memory
+555	Graphics memory:
+556	RAM:
+557	Housekeeping
+558	My servers
+559	Moves every copy except the first in the list to the trash
+560	Put these three values in “OpenAI-compatible / custom provider” (the API key is ignored but often required).
+561	Update the trace
+562	Move to trash?
+563	Move to trash (Shift + click: erase for good, no trash)
+564	Put this text in the big local model's task queue instead of posting it in the chat
+565	Move this copy to the trash
+566	Queue
+567	Pause with a resume point
+568	updated ·
+569	Moved to trash.
+570	Gentle mode: walks the local disks in the background, without blocking the interface. It skips files under 1 MB and system folders. Models found outside a root are marked “unmanaged”.
+571	model
+572	Model
+573	Loaded model (
+574	Dense model (no expert streaming).
+575	MoE model: WeightStream streams the experts from the SSD.
+576	model(s): ⭐
+577	model(s) ·
+578	model(s) · +
+579	model(s) (
+580	active model(s) (
+581	model(s) on the fast disks, not used recently
+582	model(s) found
+583	model(s).
+584	models
+585	Models
+586	Models still in the catalogue whose file disappeared from the disk (deleted or moved outside PAIZ, disk unplugged). Click: show only those, to remove them from the index.
+587	Indexed models
+588	Never-used models
+589	Unmanaged models
+590	Models the scanner found outside your roots (folders declared in Settings). PAIZ doesn't tidy them until you adopt them. Click: show only those.
+591	Fewer tools offered to the model = shorter prompt = faster answer at startup. You can change it at any time, even mid-session (⚖ Tools).
+592	Engine: quick settings
+593	Engine stopped.
+594	Engine interrupted · work kept, ready to resume
+595	WeightStream engine
+596	Engine…
+597	Stray engines
+598	Stop considering this folder
+599	Current level:
+600	Compression level
+601	Name A→Z
+602	name and description
+603	Unclassified
+604	unmanaged
+605	unmanaged
+606	Unmanaged
+607	Note this idea in the To-do:
+608	Noted in the project To-do.
+609	Note saved.
+610	Note this message in the project To-do
+611	New idea (title)
+612	PAIZ's eye:
+613	ONLINE CATALOG
+614	OpenClaw (soon)
+615	OpenCode
+616	OpenCode plugged in (
+617	OpenCode opened in
+618	OpenCode restarted with the new list of skills.
+619	Extra options
+620	Extra engine options
+621	Origin
+622	Where
+623	-
+624	Where the model works: on the graphics card, in RAM, or adapting to the machine
+625	Tool
+626	tool go to the provider: 🔴 = data used / logged, 🟡 = kept or limited, 🟢 = zero retention announced (
+627	Tools
+628	Agent tools: usage profiles (chat, code, search…) and prompt slimming
+629	-
+630	Tools offered to the model
+631	Opens OpenCode in a console, on the folder of your choice, already set up for WeightStream (isolated config: your OpenCode config is not changed). It reads and edits the files of that folder. The engine must be running.
+632	Open the model's card
+633	Open the model page on Hugging Face
+634	Open OpenCode
+635	PAIZ has never launched it. Another app may use it (SwarmUI, ComfyUI…), which PAIZ doesn't see.
+636	PAIZ only sees what goes through it (its engine and its /v1 relay): a “never used” model may be used by another program. A model is “old” after
+637	PAIZ — local models
+638	Browse folders
+639	Browse…
+640	not enough space
+641	Not enough space:
+642	no NVIDIA card
+643	No duplicate files
+644	not started by this PAIZ session
+645	Switch to
+646	Turn into a session in
+647	Dots:
+648	Exact pause of the current task
+649	can be recovered. Nothing is ticked in advance.
+650	Snapshot of
+651	right at the same place
+652	Reclaimable space
+653	plan to review before running
+654	Plan ready: “
+655	Most liked
+656	No model left: save to confirm, or go back to the list.
+657	The more you quantise, the more quality the model loses
+658	Most downloaded
+659	Weight

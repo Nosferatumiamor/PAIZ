@@ -1,0 +1,320 @@
+660	Size of the repository's GGUF files: from the lightest to the heaviest quantisation
+661	Resume point in progress
+662	API port
+663	API port
+664	Prompt warm-up (≈ 20 s the first time)
+665	KV cache precision
+666	Details for the plan (optional)…
+667	preference
+668	Prepare the tidy-up plan
+669	Requirement: Node.js (npx)
+670	Requirement missing on this machine
+671	Present
+672	ready: it appears in orange in the list.
+673	Ready to launch
+674	Applied the next time a model is launched
+675	Default profile
+676	Program
+677	Engine program
+678	Programs
+679	projects · live chat · control
+680	Suggest a plan
+681	Quantise
+682	What do you want to do?
+683	Which model is used, when, by which program, where it comes from, and what has been sleeping on your disks for too long.
+684	Storage roots
+685	Stored
+686	tidy your models · serve them to OpenCode
+687	stored on the storage disks
+688	Brings the model back to an active repo
+689	Attached to root “
+690	Recent
+691	Reloading the model, work will resume from its last resume point…
+692	Reloading the model…
+693	Reload a saved configuration
+694	Looking for disks…
+695	Looking for forgotten leftovers…
+696	Search and sort by popularity. Nothing is downloaded without your click; each file is checked (size + published SHA-256) and disk space is checked first. Only your search words are sent to Hugging Face.
+697	Searching…
+698	reclaimable
+699	Plan writing started: you can keep chatting.
+700	Back to an ordinary repo
+701	Written by
+702	Write the plan
+703	Reduce the space taken by the conversation. “Reduced” changes almost nothing; “Strongly reduced” changes the output text a little.
+704	Reduced (−47 %)
+705	Rewrites _PAIZ/trace.json and the copy of the configurations
+706	Official MCP registry: tools checked by PAIZ (✓) and free search. Anyone can publish there, look at the repository before installing. Adding runs nothing: the server arrives disabled.
+707	Default setting
+708	Settings
+709	Admin settings → Connections → OpenAI → “+”.
+710	Engine settings
+711	Engine settings saved.
+712	Settings saved.
+713	Grouped by
+714	Reset
+715	Reinstall
+716	Restart
+717	Restart the engine: work resumes from its last resume point
+718	Reads the metadata of every file again
+719	Puts files back where they were before the last tidy-up
+720	Put back in the list
+721	Replace this link with a real copy of the file? (takes disk space; the original copy is not touched)
+722	Makes the file visible here (link): the program won't download it again
+723	Making this project private erases what memory had remembered about it. Continue?
+724	storage repo
+725	Repo marked “clean stable”: the next tidy-ups will be sorted into it.
+726	Max answer
+727	Maximum answer
+728	Answers
+729	Answers with errors
+730	Storage repos
+731	Resume exactly where the work stopped
+732	requests in a row is turned off (🔒 = never)
+733	Tidy reserve
+734	Restore
+735	Forgotten leftovers
+736	result
+737	result(s)
+738	Remembered in the project memory.
+739	Remove
+740	Remove this model from the configuration
+741	Remove from the queue
+742	Remove finished tasks
+743	Back to the conversation
+744	Go back to the old interface
+745	Back to the flat view
+746	Nothing to load: no “available” model ticked.
+747	Nothing to move
+748	Nothing to free: no duplicate copy between your active repos and your storage.
+749	Nothing to tidy: everything is already in place.
+750	Nothing with these filters (untick one).
+751	Nothing from this project is read, noted or recalled; what had been remembered is erased
+752	Nothing ticked.
+753	Nothing waiting
+754	Nothing here.
+755	Nothing is erased.
+756	Nothing is deleted without your click. Click a tile to see the details and choose.
+757	Nothing happens without your click
+758	Nothing yet. Note an idea here, with “📝 Note” under a message, or ask the model.
+759	Nothing in this period.
+760	Nothing in the last 24 h.
+761	Nothing found.
+762	stopped (code
+763	Its card opens here: info, usage, linked models, light version.
+764	without an API key
+765	No location
+766	Untitled
+767	health · flush · backups
+768	Disk health
+769	Backup started.
+770	Saved on
+771	Back up
+772	Save the list of active models
+773	Scanner
+774	Scan the disks
+775	Scan all disks
+776	Scan a folder
+777	SDXL & derivatives (Pony, Illustrious…)
+778	Selection:
+779	Select at least one model.
+780	Selected and checked by PAIZ
+781	Select a project and a session.
+782	Select
+783	Select (Shift+click: a whole range)
+784	Select this copy (Shift+click: range)
+785	Select an SSD
+786	Depends on the character
+787	session(s)): deleting a session also deletes its count. Test mode
+788	Only the models in active repos (on the SSD, ready to serve)
+789	Only the models in storage repos (tidied away)
+790	skill(s) installed, disabled: tick the ones you want to use.
+791	Bring out
+792	often used
+793	Status
+794	stored
+795	Tracked since
+796	Permanent deletion (no trash).
+797	Delete
+798	Delete this item
+799	Delete this item?
+800	Delete this configuration
+801	Delete the configuration “
+802	Delete the skill “
+803	on
+804	on this disk.
+805	on the fast SSD
+806	on the slow disks.
+807	Task started.
+808	Size
+809	Size ↑
+810	Size ↓
+811	as long as you don't enable it, and
+812	Download started (follow it in the Discover tab).
+813	Downloading…
+814	Downloads
+815	Download
+816	Download the skills of:
+817	Temperature
+818	Trending
+819	Done
+820	finished
+821	Quick command-line test.
+822	Text added to the prompt by this skill
+823	To-do updated.
+824	tokens · tools offered ≈
+825	Your catalogue is clean on that side.
+826	your model loaded in PAIZ
+827	Total
+828	All these services talk to the same address:
+829	All
+830	All locations
+831	All models
+832	All models found are attached to a root (or you haven't scanned yet).
+833	All projects and conversations, where they are
+834	All are used, or tracking is too recent
+835	All
+836	Tick all
+837	Untick all
+838	Deselect all
+839	Select all
+840	Select / deselect all (the models shown)
+841	Empty everything
+842	the whole conversation
+843	The whole family —
+844	All categories
+845	All bases
+846	Trace updated (
+847	Work
+848	Strongly reduced (−72 %, changes the text)
+849	Find my models
+850	Found during a scan but outside any root. Adopt them to tidy them into a root (copy or move).
+851	You are using the
+852	Type
+853	An “MCP server” lets the model drive another program: Blender, ComfyUI, Godot… Each server is
+854	A “skill” is a folder of instructions (sometimes with scripts) that the model opens when the task calls for it. Only the
+855	A model writes the plan of the task from the conversation. It lands in the task bar as a draft: you review it before launching anything.
+856	A storage repo tidied like a real stable:
+857	A root = a folder on a disk. The dispenser can manage several, on different disks. Nothing is forcibly centralised.
+858	A version ≤
+859	Base URL:
+860	Usage
+861	uses or more recent.
+862	Uses
+863	Used by
+864	Use as a location
+865	VAE/
+866	Locked: never turned off automatically
+867	Lock: never turn it off automatically
+868	Lighter version (lossy): faster, less reliable
+869	Lossy lighter version: used by the extra-light mode
+870	Light version: faster, less reliable. It has a single setting, nothing to choose.
+871	Light version of
+872	Light version being prepared: it will appear in the collection.
+873	Empty. Discarded projects and conversations stay here for 7 days.
+874	Empty
+875	View /api/state
+876	View the content
+877	Dialogue sound volume
+878	Real file here
+879	Real copy restored.
+880	Seen recently
+881	View grouped by
+882	-
+883	: path not found (disk unplugged?) — skipped
+884	-
+885	· Duplicate groups:
+886	" removed (files stay on the disk).
+887	” is over 200 MB.
+888	” is the root of a disk: choose a specific subfolder for the project.
+889	” is protected (
+890	”). Check that the app isn't looking for this file at THIS place.
+891	(build: scripts\\build-ws-tools.ps1 in WeightStream, or the engine.exe setting)
+892	(from the name)
+893	(same repo “
+894	(removed:
+895	): the model is not allowed to work there.
+896	): partial file kept for resuming.
+897	-
+898	-
+899	-
+900	-
+901	-
+902	-
+903	[paiz] loading the model into memory…
+904	[paiz] model loaded in
+905	[paiz] prompt warm-up…
+906	[paiz] warm-up failed:
+907	[paiz] warm-up done in
+908	[paiz] warm-up skipped:
+909	-
+910	🙂 Light
+911	0.7 GB RAM + 5 GB VRAM cache (≈ 8.3 GB VRAM in total). Measured on Gemma 4 26B: ≈ 22 tok/s.
+912	0.7 GB RAM + 7 GB VRAM cache (≈ 10.2 GB VRAM in total). Measured on Gemma 4 26B: ≈ 43 tok/s. Close programs that use a lot of VRAM.
+913	100 requests/day
+914	3 GB RAM + 1 GB VRAM for the experts. A good everyday compromise.
+915	8 GB RAM + 5 GB VRAM. Fast; VRAM goes up to ~11.6 GB: close other GPU programs.
+916	was removed: we don't leave a false address
+917	full: maximum
+918	at the end (the engine
+919	to the To-do
+920	at noon
+921	Addy Osmani's Agent Skills — engineering (26 skills)
+922	added
+923	added,
+924	lightened by PAIZ (
+925	cancelled (Windows asked for confirmation)
+926	cancelled in Windows
+927	cancelled by Windows
+928	linked
+929	Warning: an over-quantised model can become bad.
+930	instead of
+931	None (nothing added)
+932	no known prompt start for this model
+933	None of the chosen disks is available.
+934	No local disk detected.
+935	No duplicates detected.
+936	No model remembered: load it once from the WeightStream tab.
+937	No model selected.
+938	No model selected.
+939	No tidy-up to undo.
+940	No SKILL.md in this repository: it is not a skill.
+941	No details specific to this model; OpenCode's general policy: zero retention, no training.
+942	No root configured. Use: paiz add-root
+943	another disk: a hard link is impossible
+944	other model(s) to
+945	Ollama library: models are better removed with “ollama rm”.
+946	Blender — 28 skills (modelling, UV, PBR, rig, animation, export…)
+947	Engineering best practices: task breakdown, security, performance, accessibility, APIs, documentation, code review, shipping. Everything installs disabled. MIT licence.
+948	Brainstorming, written plans, test-driven development, methodical debugging, code review, checking before saying “done”. Made for coding agents; everything installs disabled: only enable what you use. MIT licence.
+949	It's already a real copy.
+950	Cache adjusted continuously to free memory, even during the answer. Polite but slow.
+951	Cache of an app PAIZ doesn't know: check before deleting.
+952	Empty brief.
+953	this disk has no Windows trash: use erase
+954	this disk has no Windows trash (USB, removable or network): use “Erase” to delete it for good
+955	This file is not in any project PAIZ knows: it will not be launched.
+956	This model is already quantised: quantising again adds up the loss (better start from the F16 / BF16 original if you have it).
+957	This process is no longer a stray engine (already stopped, or started by PAIZ).
+958	This program is already running (■ Stop to close it).
+959	Loading
+960	Loading the configuration “
+961	Checkpoint / main model
+962	Missing link path.
+963	Searches the web (news, documentation). Your search queries go to Exa.
+964	overlaps the PAIZ root “
+965	overlaps a PAIZ root
+966	Choose an existing active repo for “
+967	ComfyUI — write workflows
+968	Detailed counters unavailable (USB enclosure or rights): only the overall status is known.
+969	Configuration of
+970	Tip: for this work, a model of about 15 GB is enough and leaves VRAM to ComfyUI (avoids reloading the big model on every generation). Bundled with PAIZ, nothing to download.
+971	different content: skipped
+972	cpu: without a graphics card
+973	Already at level
+974	already gone
+975	already merged
+976	Already present:
+977	timed out
+978	Starting the engine…
+979	starting…

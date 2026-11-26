@@ -1,0 +1,58 @@
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --load-mode none for better performance
+....................................................................................................
+[ 1/30] code       prompt  35 tok  1.18 tok/s | gen  48 tok  6.57 tok/s
+[ 2/30] code       prompt  28 tok  5.70 tok/s | gen  48 tok  7.16 tok/s
+[ 3/30] code       prompt  51 tok  4.70 tok/s | gen  48 tok  6.82 tok/s
+[ 4/30] code       prompt  44 tok  4.71 tok/s | gen  48 tok  6.89 tok/s
+[ 5/30] code       prompt  39 tok  4.83 tok/s | gen  48 tok  6.48 tok/s
+[ 6/30] discussion prompt  34 tok  6.10 tok/s | gen  48 tok 12.85 tok/s
+[ 7/30] discussion prompt  31 tok 15.21 tok/s | gen  48 tok 13.39 tok/s
+[ 8/30] discussion prompt  29 tok 16.66 tok/s | gen  48 tok 14.90 tok/s
+[ 9/30] discussion prompt  34 tok 14.46 tok/s | gen  48 tok 15.01 tok/s
+[10/30] discussion prompt  28 tok 17.38 tok/s | gen  48 tok 13.44 tok/s
+[11/30] traduction prompt  29 tok  7.89 tok/s | gen  15 tok  7.27 tok/s
+[12/30] traduction prompt  40 tok 11.38 tok/s | gen  18 tok 15.86 tok/s
+[13/30] traduction prompt  33 tok 13.64 tok/s | gen  16 tok 12.50 tok/s
+[14/30] traduction prompt  26 tok  7.00 tok/s | gen  26 tok 10.97 tok/s
+[15/30] traduction prompt  36 tok 10.31 tok/s | gen  26 tok 13.63 tok/s
+[16/30] histoire   prompt  27 tok  9.94 tok/s | gen  48 tok 10.43 tok/s
+[17/30] histoire   prompt  29 tok  9.49 tok/s | gen  48 tok 11.91 tok/s
+[18/30] histoire   prompt  30 tok 16.96 tok/s | gen  48 tok 18.08 tok/s
+[19/30] histoire   prompt  31 tok 18.27 tok/s | gen  48 tok 13.60 tok/s
+[20/30] histoire   prompt  28 tok 15.04 tok/s | gen  48 tok 18.43 tok/s
+[21/30] sciences   prompt  24 tok 10.79 tok/s | gen  48 tok 12.08 tok/s
+[22/30] sciences   prompt  28 tok  8.79 tok/s | gen  48 tok  9.93 tok/s
+[23/30] sciences   prompt  22 tok 14.31 tok/s | gen  48 tok  9.99 tok/s
+[24/30] sciences   prompt  29 tok  8.98 tok/s | gen  48 tok 12.20 tok/s
+[25/30] sciences   prompt  23 tok 11.35 tok/s | gen  48 tok 11.35 tok/s
+[26/30] calcul     prompt  32 tok  6.08 tok/s | gen  48 tok  5.81 tok/s
+[27/30] calcul     prompt  38 tok  6.82 tok/s | gen  48 tok  8.19 tok/s
+[28/30] calcul     prompt  43 tok  7.44 tok/s | gen  48 tok  9.45 tok/s
+[29/30] calcul     prompt  31 tok  5.69 tok/s | gen  48 tok  6.90 tok/s
+[30/30] calcul     prompt  39 tok  6.25 tok/s | gen  48 tok  8.58 tok/s
+
+WeightStream: 510063 requests, RAM hit 37.8%, 188.9 GiB read in 163.7 s
+llama_moe_cache: ubatch <= 8: hits = 552627, misses = 82486, hit rate = 87.01%, uploaded = 150004.43 MiB
+llama_moe_cache: ubatch  > 8: hits = 42539, misses = 87535, hit rate = 32.70%, uploaded = 158866.73 MiB
+
+=== 48 layers x 512 experts, budget 12288 MiB = 6765 experts (27.5% of all, 1.82 MiB each) ===
+
+Domain similarity (cosine of expert usage):
+                  code discussion traduction   histoire   sciences     calcul
+code             1.000      0.601      0.598      0.548      0.678      0.706
+discussion       0.601      1.000      0.633      0.502      0.594      0.534
+traduction       0.598      0.633      1.000      0.530      0.560      0.564
+histoire         0.548      0.502      0.530      1.000      0.561      0.512
+sciences         0.678      0.594      0.560      0.561      1.000      0.615
+calcul           0.706      0.534      0.564      0.512      0.615      1.000
+
+Share of generated-token expert uses covered by a preloaded set of 6765 experts (leave-one-out):
+domain         random    global    domain  detected    oracle  detection
+code            27.5%     60.0%     69.8%     69.8%    100.0%      5/5
+discussion      27.5%     79.4%     91.7%     91.7%    100.0%      5/5
+traduction      27.5%     70.0%     77.3%     77.3%    100.0%      5/5
+histoire        27.5%     80.6%     93.8%     93.8%    100.0%      5/5
+sciences        27.5%     69.9%     83.9%     83.9%    100.0%      5/5
+calcul          27.5%     62.8%     77.9%     77.9%    100.0%      5/5
+ALL             27.5%     70.5%     82.4%     82.4%    100.0%     30/30

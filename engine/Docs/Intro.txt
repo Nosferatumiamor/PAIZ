@@ -1,0 +1,285 @@
+Oui. Et je pense qu'il faut faire attention à un point : **ne pas commencer par "faire marcher un LLM"**, mais par **construire un moteur de streaming de poids**. C'est beaucoup plus faisable, et ça donnera un projet réutilisable.
+
+Je partirais sur un repo complètement indépendant de llama.cpp.
+
+Par exemple :
+
+```
+WeightStream/
+│
+├── CMakeLists.txt
+│
+├── include/
+│   ├── WeightStream/
+│   │   ├── Scheduler.h
+│   │   ├── Cache.h
+│   │   ├── GGUFReader.h
+│   │   ├── Prefetcher.h
+│   │   ├── VRAMUploader.h
+│   │   ├── TensorHandle.h
+│   │   ├── Metrics.h
+│   │   └── Config.h
+│
+├── src/
+│   ├── Scheduler.cpp
+│   ├── Cache.cpp
+│   ├── GGUFReader.cpp
+│   ├── Prefetcher.cpp
+│   ├── VRAMUploader.cpp
+│   ├── Metrics.cpp
+│   └── main.cpp
+│
+├── tests/
+│
+├── docs/
+│
+└── examples/
+```
+
+Le projet ne connaît même pas les LLM.
+
+Il ne connaît que des **blocs de données**.
+
+---
+
+## Phase 1
+
+Objectif :
+
+> Simuler un modèle de 40 Go.
+
+Même pas besoin d'un vrai modèle.
+
+On génère :
+
+```
+Layer 0
+Layer 1
+Layer 2
+...
+Layer 79
+```
+
+Chaque layer fait :
+
+```
+512 Mo
+```
+
+Le moteur doit réussir à faire :
+
+```
+SSD
+
+↓
+
+RAM
+
+↓
+
+VRAM
+```
+
+sans que le "GPU" (simulé) attende.
+
+---
+
+## Phase 2
+
+Lire un vrai GGUF.
+
+Le GGUF contient déjà la liste des tenseurs.
+
+Le reader fournit simplement :
+
+```cpp
+TensorInfo
+{
+    name;
+    offset;
+    size;
+}
+```
+
+Le moteur ne voit que ça.
+
+---
+
+## Phase 3
+
+Créer le cache.
+
+Par exemple :
+
+```cpp
+class WeightCache
+{
+public:
+
+    bool HasTensor(id);
+
+    TensorHandle Get(id);
+
+    void Prefetch(id);
+
+    void Evict(id);
+};
+```
+
+---
+
+## Phase 4
+
+Le scheduler.
+
+Lui est le cerveau.
+
+```cpp
+Current layer :
+
+37
+
+↓
+
+Need
+
+38
+
+39
+
+40
+
+↓
+
+Launch async read
+```
+
+---
+
+## Phase 5
+
+Le préfetch.
+
+Un thread dédié :
+
+```cpp
+while(true)
+{
+    if(queue.not_empty())
+        ReadNextTensor();
+}
+```
+
+---
+
+## Phase 6
+
+Le double buffering.
+
+```
+GPU Buffer A
+
+GPU Buffer B
+```
+
+Pendant que A calcule
+
+↓
+
+B se remplit.
+
+---
+
+## Phase 7
+
+Le backend GPU.
+
+Au début :
+
+Fake.
+
+Juste :
+
+```
+Sleep(30 ms)
+```
+
+pour simuler le calcul.
+
+Quand ça marche :
+
+CUDA.
+
+---
+
+# Ce que je demanderais à Cursor
+
+Je lui donnerais un prompt énorme.
+
+Pas juste :
+
+> Fais un projet.
+
+Mais quelque chose comme :
+
+---
+
+> Nous développons un moteur C++17 nommé **WeightStream**.
+>
+> Ce projet n'est PAS un moteur d'inférence.
+>
+> Son rôle est uniquement de streamer des blocs de poids entre SSD, RAM et VRAM afin d'alimenter un GPU sans interruption.
+>
+> Le moteur doit être conçu comme un moteur de streaming d'assets de jeu vidéo (textures, meshes...) appliqué aux poids d'un réseau neuronal.
+>
+> Les objectifs sont :
+>
+> * architecture modulaire
+> * CMake
+> * classes courtes
+> * multithreading
+> * préfetch asynchrone
+> * cache RAM
+> * cache VRAM
+> * scheduler
+> * métriques
+> * logs
+> * aucun code spécifique aux LLM dans un premier temps
+>
+> Les blocs représentent des tenseurs.
+>
+> Ils possèdent :
+>
+> * id
+> * taille
+> * offset disque
+>
+> Le moteur doit simplement être capable de demander :
+>
+> ```cpp
+> auto tensor = cache.GetTensor(id);
+> ```
+>
+> sans savoir où il est physiquement.
+>
+> Toute la logique de streaming est cachée.
+>
+> Le code doit être documenté, propre et facilement extensible vers GGUF.
+
+---
+
+Là, Cursor devrait déjà te générer plusieurs milliers de lignes de code bien structurées.
+
+## Ce que j'ajouterais
+
+J'essaierais de convaincre Cursor de **ne pas penser "LLM" mais "Unreal Engine"**.
+
+Parce qu'en réalité, ce qu'on construit est une sorte de **Virtual Memory Manager**.
+
+Et là, j'ai une idée qui pourrait être vraiment originale.
+
+Au lieu de streamer des **layers**, on pourrait streamer des **tensors individuels**.
+
+Les moteurs actuels raisonnent souvent en couches complètes, alors qu'un fichier GGUF est déjà organisé en dizaines ou centaines de tenseurs (matrices de projection, embeddings, etc.). Si certains tenseurs sont beaucoup plus volumineux ou beaucoup plus critiques que d'autres, un ordonnanceur intelligent pourrait optimiser encore davantage les transferts.
+
+Je pense qu'avant d'écrire la moindre ligne de code, on devrait aussi faire un vrai document d'architecture (un mini-RFC de 15 à 30 pages) qui décrit les composants, les flux de données, les interfaces, les politiques de cache et les objectifs de performance. Avec un document solide, Cursor aura un cadre beaucoup plus précis et produira une base de code bien plus cohérente que s'il improvise. C'est exactement le genre de projet où une bonne architecture fait gagner énormément de temps ensuite.

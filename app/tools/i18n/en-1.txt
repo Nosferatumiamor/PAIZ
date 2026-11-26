@@ -1,0 +1,330 @@
+0	— this model needs:
+1	— choose an active repo —
+2	— click to go back to the flat view
+3	— I flag it, you decide
+4	— unclassified —
+5	— stored elsewhere (
+6	— a tool that stayed red
+7	, folders of old backups or unknown caches, and files
+8	, and every link can be undone with “Real copy”.
+9	, for example a forgotten test. They take RAM and VRAM. PAIZ never stops them on its own (something else may depend on them): you choose.
+10	; you can change it at any time, even mid-session: the change makes the prompt be read again once (
+11	-
+12	-
+13	-
+14	-
+15	: pick a suggested level, not the lowest one.
+16	: only enable what you know. Enabling restarts OpenCode (work in progress is interrupted). The model calls these tools by writing a small program: a local model handles them less well than the basic tools.
+17	: faster and lighter in VRAM, but the text drifts from the normal version and code is noticeably less reliable. Better for chatting than for coding.
+18	… and
+19	… A folder
+20	· writing
+21	· never used
+22	· the model is already here
+23	· light
+24	· the ideas not to forget; they can feed a plan.
+25	· declared model:
+26	· longer than expected (≈
+27	· on the work SSD
+28	”? This program was written by the model and runs on your computer with your rights, in the project folder.
+29	”? Are you sure? (Models are not touched, only the list is cleared.)
+30	”? The model will be able to read its instructions and run its scripts. OpenCode will restart (work in progress would be interrupted).
+31	” (applied on the next request).
+32	” to the trash? It can still be recovered from the trash.
+33	” added.
+34	” from the repos? Files are not deleted; PAIZ only stops watching this folder (the models it contains will no longer be managed).
+35	” is gone: choose another one
+36	” from the disk?
+37	” is no longer in
+38	” is no longer an active repo
+39	” is no longer an active repo: choose another one (or set it up again).
+40	” reloads the model
+41	” saved.
+42	”. Draft added to the task bar.
+43	(create a project first)
+44	(can be changed at any time)
+45	(automatic backup, your other providers are not touched). Restart OpenCode afterwards.
+46	)? Each file is erased only AFTER a SHA-256 check that the storage copy is strictly identical. Erasing does not go through the trash. You can “Summon” the model back from storage, at its exact address.
+47	)? No trash, cannot be undone.
+48	) to the Windows trash? Each file is removed only AFTER a SHA-256 check that the storage copy is strictly identical. The space only comes back when you empty the trash.
+49	) with the repo each one is in, as of today. Nothing is moved.
+50	) being prepared
+51	) is copied (verified copy) to the chosen active repo, then the engine starts with the profile “
+52	). A new file is created next to the original, which is not touched.
+53	 What the model sends (scene, files, text) goes over the Internet to the tool's server.
+54	% — the row becomes the new model when it is done.
+55	% · it will appear here in orange
+56	% compute
+57	↗ Turn into a session
+58	↶ Undo the last tidy-up
+59	+ Add a tool
+60	⏸ download interrupted
+61	■ Stop
+62	○ stopped
+63	○ never used
+64	◌ loading the model…
+65	◌ starting…
+66	⚖ The tools the agent sends to the model (Chat / Code / Search profiles, prompt slimming) are set in the screen
+67	⚖ Agent tools — slim down the prompt
+68	⚠ to watch
+69	⚠ This model needs
+70	⚠ The original repo “
+71	✔ already merged (hard link): nothing wasted
+72	✔ healthy
+73	✔ file
+74	❄ Models in storage
+75	⧉ duplicate in the app
+76	⬇ Download again
+77	⭐ star
+78	⭐ Stars
+79	🎛 Settings
+80	💾 Back up model folders
+81	💾 Save the configuration
+82	📂 Load a configuration
+83	📊 Token usage
+84	📊 Model tracking
+85	📋 As a task
+86	📋 New task
+87	-
+88	📝 Project to-do
+89	🔍 Scan the selection
+90	🔥 Active models
+91	🔭 Discover models (Hugging Face)
+92	🗺 Make a plan
+93	🧠 Memory
+94	🧹 Forgotten leftovers
+95	🩺 Disk health
+96	🚽 Flush — LLM app caches
+97	🚽 Flush
+98	🚽 Flush?
+99	🛑 Stray engines
+100	-
+101	1 recommended: each extra conversation keeps ~2 GB of VRAM. A background task opens a second one on its own, while it runs.
+102	16,000 (recommended)
+103	16384 or more for a coding agent; every 1000 tokens costs KV cache.
+104	8770 is also used by other apps: use another port to run both.
+105	Add to config.yaml.
+106	needs
+107	Up to date
+108	to the exact place it came from
+109	to link
+110	to review before running
+111	to watch
+112	to sort by hand
+113	Missing
+114	access (protected folder?).
+115	restricted access
+116	Restricted access: Hugging Face account required
+117	Shared accessories
+118	Action
+119	active — work disk
+120	Refresh data
+121	GitHub address of a skill or a pack: https://github.com/owner/repo
+122	shown ·
+123	Show:
+124	Show the
+125	shown
+126	Coding agents
+127	High
+128	First add an archive root on another disk (Settings).
+129	Add a folder below — it can be on any disk.
+130	Add a root in Settings to get started.
+131	Add WeightStream as a provider in
+132	added ·
+133	Add
+134	Add by hand
+135	Add as
+136	Add without launching
+137	Add a folder
+138	Add a task
+139	Lighten
+140	Analysing…
+141	cancelled
+142	Cancel
+143	Undo the last tidy-up of this stable? Files go back exactly where they were before (according to the log).
+144	HTML preview
+145	SVG preview
+146	OpenAI-compatible API at
+147	stopped.
+148	Stop
+149	Stop this engine?
+150	Stop the current task? It will be cancelled.
+151	Stop the current task (cancelled)
+152	Tip: keep a root
+153	Warning:
+154	At startup
+155	Next time PAIZ starts, the last model used loads by itself, right at launch
+156	No LLM app cache found. 🎉
+157	No disk detected.
+158	No disk registered
+159	No duplicates
+160	No text encoder / VAE / CLIP vision found in the catalogue.
+161	No events yet.
+162	No missing file: everything is here.
+163	No GGUF file
+164	No GGUF file in this repository.
+165	No .gguf model in the catalogue. Add a root in “Model Dispenser”, then scan it.
+166	No active model to save.
+167	no model loaded
+168	No model in this category.
+169	No chat model ready to launch. Bring one out of reserve in Models.
+170	No free model available.
+171	No model indexed yet. Run a scan from the Scanner tab.
+172	No model indexed on this volume.
+173	No linked model found from the file names.
+174	No model matches these filters.
+175	No stray engine. 🎉
+176	No forgotten program running
+177	No project remembered.
+178	no project open in the Work tab
+179	No project. Use “New project” to add one.
+180	No storage repo. Create one in Disks (“store” role).
+181	No forgotten leftovers. 🎉
+182	No leftovers found
+183	No results.
+184	No server. Add one from the catalogue below.
+185	No skill installed.
+186	No memories yet.
+187	No volume online.
+188	no AI app detected
+189	No configuration. Use “Save conf” to create one with your active models.
+190	no copy of the model folders
+191	No root
+192	No root configured. Go to Settings to add a folder, or scan a disk.
+193	No destination root online. Add a disk in Settings.
+194	No root online: add or reconnect a destination disk.
+195	No request seen yet
+196	No tasks. Big requests go here; “🗺 Plan” has a model write a plan, which lands here as a draft.
+197	No usage recorded.
+198	Automatic
+199	Advanced
+200	lossy
+201	with sound
+202	Base
+203	Base / compatibility
+204	Base A→Z
+205	Local SQLite database, no dependency. A local JSON API lets other programs drive the dispenser.
+206	Health report available on Windows only.
+207	Project notepad: the ideas not to forget
+208	AI app caches
+209	Brief: what the model must produce, constraints, answer format…
+210	Computing…
+211	candidate(s) found ·
+212	Model character: change character or face
+213	Model character (pre-prompt)
+214	characters
+215	Catalogue
+216	Category
+217	Main category
+218	Categories
+219	This mode uses a Q3 version of the model,
+220	What the model sends goes over the Internet to this server
+221	What the assistants remember. Everything is local and editable; “✕” forgets for good. Conversations are digested after 10 min of inactivity, by the loaded model.
+222	What the known caches don't cover: interrupted downloads (
+223	What you want to do with the agent: fewer tools = shorter prompt = faster answer at startup. Can be changed at any time (the change makes the prompt be read again once).
+224	Whatever your tools still use (voice, image generation…) will be downloaded again on next launch.
+225	The chat one
+226	The chat one (already loaded)
+227	These models from the active repos already have a copy
+228	Change the filter, or add a folder in Settings › Tracked folders.
+229	Each extra conversation keeps about 2 GB of graphics memory. One is enough: a background task opens a second one on its own, while it runs.
+230	Each tool exposed to the model is read again in every conversation: on a big slow model, that adds up to minutes.
+231	Each tool offered to the model is text it must read again in every new session (≈ 3 s per thousand tokens). Fewer useless tools = faster answer at startup, with the same quality as long as the model doesn't need what was removed.
+232	Each tool offered is read again in every conversation. Automatic keeps only the ones the request needs: faster.
+233	Every deletion is written to the housekeeping log.
+234	loaded
+235	Machine load
+236	Automatic loading turned off.
+237	Loading free models…
+238	Loading the model into memory
+239	loading the model…
+240	Loading the model…
+241	Loading…
+242	Load at startup
+243	Automatically load the last model used when PAIZ starts
+244	Load the selection (
+245	Load more
+246	Load more
+247	Load everything available
+248	Flushed:
+249	Search
+250	Search this file on Hugging Face
+251	Search memory and past conversations…
+252	Search for a model
+253	Search for a model…
+254	Pick roomy disks, no need for an SSD
+255	Choose the model for this session: local or free cloud (OpenCode)
+256	Pick a full disk; the dispenser suggests the biggest models to send back to an archive root.
+257	Choose a model
+258	Choose a profile for what you want to do
+259	Choose an active repo for:
+260	Pick a section or run a search.
+261	below will be deleted for good. App libraries (Ollama, LM Studio…) are not touched.
+262	Claude Code (soon)
+263	Key: sk-local
+264	API key: sk-local Model:
+265	Click to set the folders
+266	Click to group by base
+267	Click to group by location
+268	Click to group by type
+269	In each group, tick every copy except the first in the list
+270	Tick everything available
+271	Code with OpenCode, plugged into PAIZ
+272	Paste the address of a GitHub repository.
+273	How much
+274	How much memory it takes (changing it reloads the model)
+275	How much text the model keeps in mind during a conversation. The longer, the more memory it needs. 16,000 suits coding agents.
+276	Components
+277	Shared components
+278	Compression of this memory
+279	Configuration updated.
+280	Token usage: local and remote
+281	Continue exactly where you stopped, without repeating what came before.
+282	Continue where you left off.
+283	ControlNet/
+284	Conversations at the same time
+285	Conversations in memory (slots)
+286	Active copy (will be removed)
+287	copy of
+288	copying the model folders…
+289	Copy kept in storage
+290	Incremental copy (robocopy) of a model root to another disk: only new or changed files are copied, nothing is deleted at the destination.
+291	Copied.
+292	Copy
+293	copy instead of moving
+294	Copy this message
+295	Copy the JSON config
+296	Extra copies (keep the 1st)
+297	Trash
+298	Windows trash: recoverable, the space comes back when you empty it
+299	Windows trash: recoverable, but the space only comes back when you empty it
+300	Creates a smaller, faster copy next to the original (which does not move). The lighter, the less reliable.
+301	Creates a real session in this project with this conversation, so the model can work with its tools
+302	Create
+303	in the queue
+304	in the same active repo. PAIZ chooses nothing for you: you tick, you choose trash or erase.
+305	in a storage repo: they take the space twice. “Free up” first checks that both files are strictly identical (SHA-256 of both), remembers their exact address, then removes the active copy. A click on “Summon” puts them back
+306	Date
+307	Date ↑
+308	Date ↓
+309	of
+310	-
+311	of each file (where it comes from) and a copy of the configuration lists (without the models). “Tidy up” puts models in the right place, “Summon” puts them back at their exact address; a file with no known address goes back to the folder your Stable Diffusion install already uses for that type.
+312	of VRAM
+313	decision
+314	Unticking separates them: PAIZ will remember that this model needs them to work.
+315	Set an active repo first.
+316	already active
+317	Already added
+318	already well tidied ·
+319	Request sent: the items will arrive in the To-do.
+320	Ask
+321	Move started:
+322	Move
+323	move (frees the source)
+324	Move here
+325	Move the selection
+326	Move…
+327	Repository
+328	repository ↗
+329	Since

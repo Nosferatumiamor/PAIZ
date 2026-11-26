@@ -1,0 +1,9 @@
+[
+ {"name":"chat"},
+ {"clicks":["Models"],"name":"models"},
+ {"clicks":["Groups"],"name":"groups-list"},
+ {"clicks":["Mon jeu"],"name":"groups-detail"},
+ {"eval":"document.querySelector('#modal-root').innerHTML=''"},
+ {"clicks":["Housekeeping"],"name":"housekeeping"},
+ {"clicks":["Tools"],"name":"tools"}
+]

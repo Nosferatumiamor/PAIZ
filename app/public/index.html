@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PAIZ-WeightStream — modèles locaux</title>
+  <meta name="description" content="PAIZ — catalogue et échange de modèles IA : LLM, checkpoints, LoRA, ControlNet, VAE…">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo"><img src="/logo.webp" alt=""></div>
+      <div class="brand-text">
+        <h1>PAIZ <span>WEIGHTSTREAM</span></h1>
+        <p>ranger tes modèles · les servir à OpenCode</p>
+      </div>
+    </div>
+    <div class="header-stats" id="header-stats"></div>
+    <button class="btn ghost" id="btn-lang" title="Language / Langue">EN · FR</button>
+    <button class="btn primary" id="btn-newui" title="Essayer la nouvelle interface, plus simple (tu peux revenir à celle-ci depuis ses Réglages)">✨ Nouvelle interface</button>
+    <button class="btn ghost" id="btn-refresh" title="Actualiser les données">↻ Actualiser</button>
+  </header>
+
+  <nav class="topnav" id="topnav">
+    <button data-group="ws" class="top-tab active">⚡ WeightStream <small>moteur · tests · connexions</small></button>
+    <button data-group="work" class="top-tab">🛠 Travail <small>projets · discussion en direct · contrôle</small></button>
+    <button data-group="models" class="top-tab">◈ Models <small>locaux · catalogue en ligne</small></button>
+    <button data-group="tools" class="top-tab">🧰 Outils <small>Blender · ComfyUI · Godot… (MCP)</small></button>
+    <button data-group="care" class="top-tab">🩺 Entretien <small>santé · chasse d'eau · sauvegardes</small></button>
+  </nav>
+
+  <nav class="modesnav" id="modesnav">
+    <button data-mode="local" class="mode-tab active">LOCAL MODELS</button>
+    <button data-mode="online" class="mode-tab">ONLINE CATALOG</button>
+  </nav>
+
+  <nav class="tabs" id="tabs" data-for="dispenser">
+    <button data-view="catalogue" class="tab active">Catalogue</button>
+    <button data-view="engine" class="tab hidden-tab">⚡</button>
+    <button data-view="work" class="tab hidden-tab">🛠</button>
+    <button data-view="care" class="tab hidden-tab">🩺</button>
+    <button data-view="hub" class="tab hidden-tab">🔭</button>
+    <button data-view="tools" class="tab hidden-tab">🧰</button>
+    <button data-view="disks" class="tab">Disques</button>
+    <button data-view="ecurie" class="tab">Écurie</button>
+    <button data-view="components" class="tab">Composants</button>
+    <button data-view="duplicates" class="tab">Doublons <span class="tab-badge hidden" id="dup-badge"></span></button>
+    <button data-view="scan" class="tab">Scanner</button>
+    <button data-view="settings" class="tab">Réglages</button>
+  </nav>
+
+  <main>
+    <section id="view-hub" class="view"><div id="hub-body"></div></section>
+    <section id="view-tools" class="view"><div id="tools-body"></div></section>
+    <section id="view-work" class="view"><div id="work-body"></div></section>
+    <section id="view-care" class="view"><div id="care-body"><p class="muted">Chargement…</p></div></section>
+    <section id="view-engine" class="view"><div id="engine-body"><p class="muted">Chargement…</p></div></section>
+
+    <!-- ================= CATALOGUE ================= -->
+    <section id="view-catalogue" class="view active">
+      <div class="stats-row" id="stats-row"></div>
+
+      <div class="toolbar panel">
+        <input type="search" id="search" class="input grow" placeholder="Rechercher : nom, chemin, base, titre…">
+        <select id="filter-category" class="input" title="Catégorie"></select>
+        <select id="filter-base" class="input" title="Base / compatibilité"></select>
+        <select id="filter-root" class="input" title="Emplacement"></select>
+        <label class="check"><input type="checkbox" id="filter-unmanaged"> non gérés</label>
+        <select id="filter-state" class="input" title="État">
+          <option value="present">Présents</option>
+          <option value="missing">Absents</option>
+          <option value="trashed">Corbeille</option>
+          <option value="all">Tout</option>
+        </select>
+        <select id="sort" class="input" title="Tri">
+          <option value="size:desc">Taille ↓</option>
+          <option value="size:asc">Taille ↑</option>
+          <option value="date:desc">Date ↓</option>
+          <option value="date:asc">Date ↑</option>
+          <option value="name:asc">Nom A→Z</option>
+          <option value="base:asc">Base A→Z</option>
+          <option value="seen:desc">Vu récemment</option>
+        </select>
+      </div>
+
+      <div class="panel table-panel">
+        <div class="table-head">
+          <div class="table-head-left">
+            <div class="role-tabs" id="role-tabs" role="tablist">
+              <button class="role-tab on" data-role="all" role="tab" title="Tous les modèles">ALL</button>
+              <button class="role-tab" data-role="active" role="tab" title="Seulement les modèles des repos actifs (sur le SSD, prêts à servir)">🔥 ACTIF</button>
+              <button class="role-tab" data-role="store" role="tab" title="Seulement les modèles des repos de stockage (rangés)">❄ STOCK</button>
+            </div>
+            <div id="table-count" class="muted"></div>
+            <button id="clear-group" class="group-chip hidden" type="button" title="Revenir à la vue plate"></button>
+          </div>
+          <div class="muted small" id="table-total-bytes"></div>
+        </div>
+        <div class="sel-bar hidden" id="sel-bar"></div>
+        <div class="table-scroll">
+          <table class="assets-table fixed" id="assets-table">
+            <colgroup><col data-c="sel"><col data-c="name"><col data-c="type"><col data-c="base"><col data-c="loc"><col data-c="size"><col data-c="date"><col data-c="mv"><col data-c="del"></colgroup>
+            <thead>
+              <tr>
+                <th class="th-sel"><input type="checkbox" id="sel-all" title="Tout sélectionner / désélectionner (les modèles affichés)"></th>
+                <th class="th-rs">Modèle</th>
+                <th class="th-group th-rs" data-group="category" tabindex="0" role="button" aria-pressed="false" title="Cliquer pour regrouper par type">Type</th>
+                <th class="th-group th-rs" data-group="base" tabindex="0" role="button" aria-pressed="false" title="Cliquer pour regrouper par base">Base</th>
+                <th class="th-group th-rs" data-group="location" tabindex="0" role="button" aria-pressed="false" title="Cliquer pour regrouper par emplacement">Emplacement</th>
+                <th class="num th-sort" data-sort="size" tabindex="0" role="button" title="Trier par taille">Taille</th>
+                <th class="th-sort" data-sort="date" tabindex="0" role="button" title="Trier par date">Date</th>
+                <th class="th-mv">Déplacer</th>
+                <th class="th-q">Quantifier</th>
+                <th class="th-del">Supprimer</th>
+              </tr>
+            </thead>
+            <tbody id="assets-body"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <button class="btn ghost hidden" id="load-more">Charger plus</button>
+          <span id="empty-hint" class="muted"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DISQUES ================= -->
+    <section id="view-components" class="view"><div id="components-body"><p class="muted">Chargement…</p></div></section>
+    <section id="view-ecurie" class="view"><div id="ecurie-body"><p class="muted">Chargement…</p></div></section>
+
+    <section id="view-disks" class="view">
+      <div id="volumes-grid" class="volumes-grid"></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Faire de la place</h2>
+          <p class="muted">Choisis un disque saturé, le dispenser propose les plus gros modèles à renvoyer vers une racine d'archive.</p>
+        </div>
+        <div class="toolbar">
+          <select id="free-volume" class="input"></select>
+          <input id="free-need" class="input" type="number" min="0" step="1" value="10" title="Go à libérer">
+          <span class="muted">Go à libérer</span>
+          <button class="btn" id="btn-suggest">Proposer un plan</button>
+        </div>
+        <div id="suggest-result"></div>
+      </div>
+    </section>
+
+    <!-- ================= DOUBLONS ================= -->
+    <section id="view-duplicates" class="view">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Doublons</h2>
+          <p class="muted">Le même fichier présent à plusieurs endroits. PAIZ propose quoi garder (⭐) et quoi faire des autres copies ; rien n'est fait sans ton clic.</p>
+          <label class="check dup-manual-only"><input type="checkbox" id="dup-erase"> mode manuel : effacer directement, sans corbeille (irréversible, comme Maj+Suppr)</label>
+        </div>
+        <div class="sel-bar hidden" id="dup-bar"></div>
+        <div id="duplicates-list"></div>
+      </div>
+    </section>
+
+    <!-- ================= SCANNER ================= -->
+    <section id="view-scan" class="view">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Scanner tous les disques</h2>
+          <p class="muted">Mode doux : parcourt les disques locaux en tâche de fond, sans bloquer l'interface. Il ignore les fichiers de moins de 1 Mo et les dossiers système. Les modèles trouvés hors racine sont marqués « non gérés ».</p>
+        </div>
+        <div class="scan-form">
+          <button class="btn primary" id="btn-scan-all">Trouver mes modèles</button>
+          <span class="muted small">Disques fixes et amovibles, plus les caches HuggingFace / LM Studio. Annulable à tout moment.</span>
+        </div>
+        <div id="scan-all-progress"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Scanner un dossier</h2>
+          <p class="muted">Explore un disque ou un dossier, et indexe tout ce qui ressemble à un modèle IA. Les fichiers trouvés hors racine sont marqués « non gérés » : tu peux ensuite les adopter.</p>
+        </div>
+        <div class="scan-form">
+          <input id="scan-path" class="input grow" placeholder="Ex : D:\IA\Models  ·  I:\Sauvegardes\civitai  ·  C:\Users\moi\.cache\huggingface">
+          <button class="btn primary" id="btn-scan">Scanner</button>
+        </div>
+        <label class="check"><input type="checkbox" id="scan-register"> Enregistrer ce dossier comme racine gérée</label>
+        <div class="scan-register-fields hidden" id="scan-register-fields">
+          <input id="scan-root-name" class="input" placeholder="Nom de la racine (ex : archive-D)">
+          <select id="scan-root-role" class="input">
+            <option value="store">store — archive / stockage</option>
+            <option value="active">active — disque de travail</option>
+            <option value="external">external — dossier externe</option>
+          </select>
+        </div>
+        <div id="scan-progress"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Modèles non gérés</h2>
+          <p class="muted">Trouvés lors d'un scan mais hors de toute racine. Adopte-les pour les ranger dans une racine (copie ou déplacement).</p>
+        </div>
+        <div id="unmanaged-list"></div>
+      </div>
+    </section>
+
+    <!-- ================= RÉGLAGES ================= -->
+    <section id="view-settings" class="view">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Racines de stockage</h2>
+          <p class="muted">Une racine = un dossier sur un disque. Le dispenser peut en gérer plusieurs, sur des disques différents. Rien n'est centralisé de force.</p>
+        </div>
+        <div id="roots-list"></div>
+        <div class="toolbar" style="margin-top:14px">
+          <input id="root-name" class="input" placeholder="Nom (ex : archive-D)">
+          <input id="root-path" class="input grow" placeholder="Chemin (ex : D:\IA\Models)">
+          <select id="root-role" class="input">
+            <option value="store">store</option>
+            <option value="active">active</option>
+            <option value="external">external</option>
+          </select>
+          <button class="btn primary" id="btn-add-root">Ajouter</button>
+        </div>
+        <p class="muted small">Astuce : garde une racine <code>active</code> sur ton NVMe (C:) et une ou plusieurs racines <code>store</code> sur les disques lents.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Journal</h2>
+          <p class="muted">Dernières opérations effectuées par le dispenser.</p>
+        </div>
+        <div id="events-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Données & API</h2>
+          <p class="muted">Base SQLite locale, sans dépendance. Une API JSON locale permet à d'autres programmes de piloter le dispenser.</p>
+        </div>
+        <div class="kv-grid" id="data-info"></div>
+        <div class="toolbar" style="margin-top:12px">
+          <a class="btn ghost" href="/api/export" download="paiz-export.json">Exporter le catalogue (JSON)</a>
+          <a class="btn ghost" href="/api/state" target="_blank" rel="noreferrer">Voir /api/state</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal-root"></div>
+  <div id="toasts" class="toasts"></div>
+  <div id="job-dock" class="job-dock hidden"></div>
+
+  <script type="module" src="/i18n.js"></script>
+  <script type="module" src="/app.js"></script>
+  <script type="module" src="/engine.js"></script>
+  <script type="module" src="/care.js"></script>
+  <script type="module" src="/work.js"></script>
+  <script type="module" src="/hub.js"></script>
+  <script type="module" src="/tools.js"></script>
+  <script type="module" src="/ecurie.js"></script>
+  <script type="module" src="/components.js"></script>
+  <script type="module" src="/nav.js"></script>
+  <script type="module">import { getLang, setLang } from '/i18n.js'; { const b = document.getElementById('btn-lang'); if (b) { b.textContent = getLang() === 'en' ? 'FR' : 'EN'; b.onclick = () => setLang(getLang() === 'en' ? 'fr' : 'en'); } }
+document.getElementById('btn-newui')?.addEventListener('click', async () => { await fetch('/api/ui', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ version: 'v2' }) }); location.href = '/'; });</script>
+</body>
+</html>

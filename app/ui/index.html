@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PAIZ-WeightStream</title>
+  <style>
+    html, body { height: 100%; margin: 0; background: #0b1216; overflow: hidden; }
+    body { display: grid; place-items: center; color: #bff6ff; font: 15px/1.5 "Segoe UI", system-ui, sans-serif; }
+    .splash { height: 100vh; max-width: 100vw; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .splash img { max-height: 50vh; max-width: 80vw; object-fit: contain; animation: glow 2.6s ease-in-out infinite alternate; }
+    .brand { margin-top: 14px; text-align: center; }
+    .brand h1 { margin: 0; font: 900 52px/1 "Segoe UI Black", "Segoe UI", system-ui, sans-serif; letter-spacing: .06em; color: #e8f2f3; }
+    .brand h1 span { color: #4fd8c4; }
+    .brand .kind { margin-top: 4px; font: 700 13px/1 "Segoe UI", system-ui, sans-serif; letter-spacing: .38em; text-transform: uppercase; color: #4fd8c4; }
+    .brand .tag { margin-top: 12px; font: 500 16px/1.4 "Segoe UI", system-ui, sans-serif; color: #a9bcc2; }
+    @keyframes glow { from { filter: drop-shadow(0 0 6px rgba(79,216,196,.25)); } to { filter: drop-shadow(0 0 22px rgba(79,216,196,.55)); } }
+    .status { margin-top: 10px; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; color: #5eead4; }
+    .bar { width: min(320px, 60vw); height: 3px; margin-top: 12px; background: rgba(94,234,212,.15); overflow: hidden; border-radius: 2px; }
+    .bar i { display: block; width: 40%; height: 100%; background: #5eead4; animation: run 1.3s ease-in-out infinite; }
+    @keyframes run { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+    .failed .bar { display: none; }
+    .error { display: none; max-width: 520px; margin-top: 14px; padding: 12px 16px; border: 1px solid rgba(255,107,125,.4); border-radius: 12px; background: rgba(255,107,125,.08); text-align: left; }
+    .error.show { display: block; }
+    .error h2 { margin: 0 0 6px; font-size: 13px; color: #ff6b7d; text-transform: uppercase; letter-spacing: .08em; }
+    .error p { margin: 0; color: #ffc2ca; font-size: 13px; white-space: pre-wrap; word-break: break-word; }
+    .error code { display: block; margin-top: 8px; font-size: 12px; color: #8b9bb8; }
+  </style>
+</head>
+<body>
+  <div class="splash">
+    <img src="splash-v2.webp" alt="">
+    <div class="brand"><h1>PA<span>IZ</span></h1><div class="kind">weight streamer</div><div class="tag">Big AI models, on the machine you have.</div></div>
+    <div class="status" id="status-label" style="margin-top:22px">Starting the local engine…</div>
+    <div class="bar"><i></i></div>
+    <div class="error" id="error" role="alert">
+      <h2>PAIZ did not start</h2>
+      <p id="error-message"></p>
+      <code>Log: %APPDATA%\PAIZ\server.log</code>
+    </div>
+  </div>
+  <script>
+    // Appelées par le shell Rust (src-tauri/src/main.rs).
+    window.paizError = function (message) {
+      document.body.classList.add('failed');
+      var t = document.getElementById('error-message'); if (t) t.textContent = message || 'Unknown error.';
+      var l = document.getElementById('status-label'); if (l) l.textContent = 'Startup failed';
+      var b = document.getElementById('error'); if (b) b.classList.add('show');
+    };
+    window.paizProgress = function (message) {
+      var EN = { 'Moteur Node.js lancé…': 'Node.js engine started…' }; var l = document.getElementById('status-label'); if (l && message) l.textContent = EN[message] || message;
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+Ecris en C++ un programme complet qui lit un fichier texte, compte la frequence de chaque mot, et affiche les dix mots les plus frequents. Explique ton code.

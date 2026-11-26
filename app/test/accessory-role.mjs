@@ -1,0 +1,20 @@
+// Accessoires : rôle reconnu d'après le nom, et verdict « orphelin » quand aucun modèle principal présent n'en a besoin.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'paiz-acc-'));
+process.env.PAIZ_HOME = path.join(TMP, 'home');
+const dir = path.join(TMP, 'm'); fs.mkdirSync(dir);
+const put = (n, mb) => { const f = fs.openSync(path.join(dir, n), 'w'); fs.ftruncateSync(f, mb * 1024 * 1024); fs.closeSync(f); };
+put('umt5_xxl_fp8.safetensors', 6); put('gemma_3_12B_it.safetensors', 8); put('wan2.1_i2v_14B.safetensors', 1700); put('mystere_zzz.safetensors', 5);
+const { openDb, addRoot, queryAssets } = await import('../src/db.js');
+const { scanPath } = await import('../src/scanner.js');
+const { relatedTo } = await import('../src/related.js');
+const db = openDb(); const r = addRoot(db, { name: 'm', path: dir, role: 'active' });
+await scanPath(db, { dir, rootId: r.id, maxDepth: 3, minBytes: 1 });
+const id = (n) => queryAssets(db, { q: n, limit: 20 }).items.find((a) => a.file_name.startsWith(n)).id;
+const umt5 = relatedTo(db, id('umt5')).role; assert.ok(umt5 && !umt5.orphan && umt5.mains.length === 1, 'UMT5 : sert à Wan présent');
+const gem = relatedTo(db, id('gemma_3')).role; assert.ok(gem && gem.orphan, 'Gemma 3 12B : aucun modèle LTX → orphelin');
+assert.equal(relatedTo(db, id('mystere')).role, null, 'nom inconnu : pas de verdict');
+console.log('  ✔ accessoires : rôle reconnu, verdict orphelin / nécessaire, nom inconnu sans verdict');

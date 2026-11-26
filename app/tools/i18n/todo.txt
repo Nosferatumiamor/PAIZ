@@ -1,0 +1,1290 @@
+0	— ce modèle a besoin de :
+1	— choisir un repo actif —
+2	— cliquer pour revenir à la vue plate
+3	— je te signale, tu décides
+4	— non classé —
+5	— rangé ailleurs (
+6	— un outil resté rouge
+7	, dossiers de vieilles sauvegardes ou de caches inconnus, et fichiers
+8	, et chaque lien se défait en « Vraie copie ».
+9	, par exemple un test oublié. Ils occupent de la RAM et de la VRAM. PAIZ ne les arrête jamais seul (ce peut être autre chose qui en dépend) : tu choisis.
+10	; tu peux en changer à tout moment, même en pleine session : le changement fait relire le prompt une fois (
+11	: '') : 'Moteur éteint'}
+12	: ''} · point de reprise enregistré
+13	: ''}. Charger déplace les modèles « dispo » vers le repo actif choisi (jamais de copie).
+14	: 'Aucune sélection'}
+15	: choisis un niveau suggéré, pas le plus bas.
+16	: n'active que ce que tu connais. L'activation relance OpenCode (un travail en cours est interrompu). Le modèle appelle ces outils en écrivant un petit programme : un modèle local s'en sort moins bien qu'avec les outils de base.
+17	: plus rapide et plus légère en VRAM, mais le texte s’écarte de la version normale et le code est nettement moins fiable. Plutôt pour discuter que pour coder.
+18	… et
+19	… Un dossier
+20	· écriture
+21	· jamais utilisés
+22	· le modèle est déjà là
+23	· légère
+24	· les idées à ne pas oublier ; elles peuvent nourrir un plan.
+25	· modèle déclaré :
+26	· plus long que prévu (≈
+27	· sur le SSD de travail
+28	» ? Ce programme a été écrit par le modèle et s'exécute sur ton ordinateur avec tes droits, dans le dossier du projet.
+29	» ? Êtes-vous sûr ? (Les modèles ne sont pas touchés, seule la liste est effacée.)
+30	» ? Le modèle pourra lire ses consignes et lancer ses scripts. OpenCode sera relancé (un travail en cours serait interrompu).
+31	» (pris en compte à la prochaine requête).
+32	» à la corbeille ? Il reste récupérable depuis la corbeille.
+33	» ajouté.
+34	» des repos ? Les fichiers ne sont pas supprimés ; PAIZ cesse seulement de surveiller ce dossier (les modèles qu'il contient ne seront plus gérés).
+35	» disparu : en choisir un
+36	» du disque ?
+37	» n'est plus dans
+38	» n'est plus un repo actif
+39	» n'est plus un repo actif : choisis-en un autre (ou redéfinis-le).
+40	» recharge le modèle
+41	» sauvegardée.
+42	». Brouillon ajouté à la barre des tâches.
+43	(crée d'abord un projet)
+44	(modifiable à tout moment)
+45	(sauvegarde automatique, tes autres fournisseurs ne sont pas touchés). Relance OpenCode ensuite.
+46	) ? Chaque fichier n'est effacé qu'APRÈS vérification SHA-256 que la copie de stockage est strictement identique. L'effacement ne passe pas par la corbeille. Tu pourras « Invoquer » le modèle depuis le stockage, à son adresse exacte.
+47	) ? Sans corbeille, irréversible.
+48	) à la corbeille Windows ? Chaque fichier n'est retiré qu'APRÈS vérification SHA-256 que la copie de stockage est strictement identique. La place n'est rendue qu'en vidant la corbeille.
+49	) avec le repo où chacun se trouve, à la date d'aujourd'hui. Rien n'est déplacé.
+50	) en préparation
+51	) est copié (copie vérifiée) dans le repo actif choisi, puis le moteur démarre avec le profil «
+52	). Un nouveau fichier est créé à côté de l’original, qui n’est pas touché.
+53	&nbsp;Ce que le modèle envoie (scène, fichiers, texte) part sur Internet vers le serveur de l'outil.
+54	% — la ligne devient le nouveau modèle à la fin.
+55	% · elle apparaîtra ici en orange
+56	% de calcul
+57	↗ En faire une session
+58	↶ Annuler le dernier rangement
+59	+ Ajouter un outil
+60	⏸ téléchargement interrompu
+61	■ Arrêter
+62	○ arrêté
+63	○ jamais utilisé
+64	◌ chargement du modèle…
+65	◌ démarrage…
+66	⚖ Les outils que l’agent envoie au modèle (profils Discussion / Code / Recherche, allègement du prompt) se règlent dans l’écran
+67	⚖ Outils de l'agent — alléger le prompt
+68	⚠ à surveiller
+69	⚠ Ce modèle a besoin de
+70	⚠ Le repo d'origine «
+71	✔ déjà fusionnées (lien dur) : rien de gaspillé
+72	✔ en bonne santé
+73	✔ fichier
+74	❄ Modèles en stock
+75	⧉ doublon dans l'appli
+76	⬇ Retélécharger
+77	⭐ étoile
+78	⭐ Étoiles
+79	🎛 Réglages
+80	💾 Sauvegarde des dossiers de modèles
+81	💾 Sauvegarder la configuration
+82	📂 Charger une configuration
+83	📊 Consommation de jetons
+84	📊 Suivi des modèles
+85	📋 En tâche
+86	📋 Nouvelle tâche
+87	📋 Tâches${act ?
+88	📝 To-do du projet
+89	🔍 Scanner la sélection
+90	🔥 Modèles actifs
+91	🔭 Découvrir des modèles (Hugging Face)
+92	🗺 Faire un plan
+93	🧠 Mémoire
+94	🧹 Restes oubliés
+95	🩺 Santé des disques
+96	🚽 Chasse d'eau — caches des applications LLM
+97	🚽 Tirer la chasse
+98	🚽 Tirer la chasse ?
+99	🛑 Moteurs égarés
+100	${m.conflict ? 'nom déjà pris à la destination' :
+101	1 recommandé : chaque conversation en plus garde ~2 Go de VRAM. Une tâche de fond en ouvre une seconde toute seule, le temps qu'elle tourne.
+102	16 000 (conseillé)
+103	16384 ou plus pour un agent de code ; chaque 1000 jetons coûte du cache KV.
+104	8770 est aussi utilisé par d'autres applis : mets un autre port pour utiliser les deux.
+105	À ajouter dans config.yaml.
+106	a besoin de
+107	À jour
+108	à l'endroit précis d'où il était parti
+109	à lier
+110	à relire avant de lancer
+111	à surveiller
+112	à trier à la main
+113	Absents
+114	accès (dossier protégé ?).
+115	accès restreint
+116	Accès restreint : compte Hugging Face requis
+117	Accessoires partagés
+118	Action
+119	active — disque de travail
+120	Actualiser les données
+121	Adresse GitHub d'un skill ou d'un pack : https://github.com/proprietaire/depot
+122	affiché(s) ·
+123	Afficher :
+124	Afficher les
+125	affichés
+126	Agents de code
+127	Aiguë
+128	Ajoute d'abord une racine d'archive sur un autre disque (Réglages).
+129	Ajoute un dossier ci-dessous — il peut être sur n'importe quel disque.
+130	Ajoute une racine dans Réglages pour commencer.
+131	Ajoute WeightStream comme fournisseur dans
+132	ajouté(s) ·
+133	Ajouter
+134	Ajouter à la main
+135	Ajouter comme
+136	Ajouter sans lancer
+137	Ajouter un dossier
+138	Ajouter une tâche
+139	Alléger
+140	Analyse…
+141	annulée
+142	Annuler
+143	Annuler le dernier rangement de cette écurie ? Les fichiers reviennent exactement où ils étaient avant (d'après le journal).
+144	Aperçu HTML
+145	Aperçu SVG
+146	API compatible OpenAI sur
+147	arrêté.
+148	Arrêter
+149	Arrêter ce moteur ?
+150	Arrêter la tâche en cours ? Elle sera annulée.
+151	Arrêter la tâche en cours (annulée)
+152	Astuce : garde une racine
+153	Attention :
+154	Au démarrage
+155	Au prochain démarrage de PAIZ, le dernier modèle utilisé se charge tout seul, dès le lancement
+156	Aucun cache d'application LLM trouvé. 🎉
+157	Aucun disque détecté.
+158	Aucun disque enregistré
+159	Aucun doublon
+160	Aucun encodeur / VAE / CLIP vision trouvé dans le catalogue.
+161	Aucun événement pour le moment.
+162	Aucun fichier absent : tout est là.
+163	Aucun fichier GGUF
+164	Aucun fichier GGUF dans ce dépôt.
+165	Aucun modèle .gguf dans le catalogue. Ajoute une racine dans « Model Dispenser » puis scanne-la.
+166	Aucun modèle actif à sauvegarder.
+167	aucun modèle chargé
+168	Aucun modèle dans cette catégorie.
+169	Aucun modèle de discussion prêt à lancer. Sors-en un de la réserve dans Modèles.
+170	Aucun modèle gratuit disponible.
+171	Aucun modèle indexé pour l'instant. Lance un scan depuis l'onglet Scanner.
+172	Aucun modèle indexé sur ce volume.
+173	Aucun modèle lié repéré d’après les noms de fichiers.
+174	Aucun modèle ne correspond à ces filtres.
+175	Aucun moteur égaré. 🎉
+176	Aucun programme oublié en marche
+177	Aucun projet mémorisé.
+178	aucun projet ouvert dans l'onglet Travail
+179	Aucun projet. « Nouveau projet » pour en ajouter un.
+180	Aucun repo de stockage. Crée-en un dans Disques (rôle « stock »).
+181	Aucun reste oublié. 🎉
+182	Aucun reste trouvé
+183	Aucun résultat.
+184	Aucun serveur. Ajoute-en un depuis le catalogue ci-dessous.
+185	Aucun skill installé.
+186	Aucun souvenir pour l’instant.
+187	Aucun volume en ligne.
+188	aucune appli IA détectée
+189	Aucune configuration. Utilise « Save conf » pour en créer une avec tes modèles actifs.
+190	aucune copie des dossiers de modèles
+191	Aucune racine
+192	Aucune racine configurée. Va dans Réglages pour ajouter un dossier, ou Scanner un disque.
+193	Aucune racine de destination en ligne. Ajoute un disque dans Réglages.
+194	Aucune racine en ligne : ajoute ou rebranche un disque de destination.
+195	Aucune requête vue pour l’instant
+196	Aucune tâche. Les grosses demandes passent ici ; « 🗺 Plan » fait rédiger un plan par un modèle, qui arrive ici en brouillon.
+197	Aucune utilisation relevée.
+198	Automatique
+199	Avancé
+200	avec perte
+201	avec son
+202	Base
+203	Base / compatibilité
+204	Base A→Z
+205	Base SQLite locale, sans dépendance. Une API JSON locale permet à d'autres programmes de piloter le dispenser.
+206	Bilan de santé disponible sous Windows uniquement.
+207	Bloc-notes du projet : les idées à ne pas oublier
+208	Caches des applis IA
+209	Cahier des charges : ce que le modèle doit produire, contraintes, format de la réponse…
+210	Calcul…
+211	candidat(s) repéré(s) ·
+212	Caractère du modèle : changer de caractère ou de visage
+213	Caractère du modèle (pré-prompt)
+214	caractères
+215	Catalogue
+216	Catégorie
+217	Catégorie principale
+218	Catégories
+219	Ce mode utilise une version Q3 du modèle,
+220	Ce que le modèle envoie part sur Internet vers ce serveur
+221	Ce que les assistants se rappellent. Tout est local et modifiable ; « ✕ » oublie pour de bon. Les conversations sont digérées après 10 min d’inactivité, par le modèle chargé.
+222	Ce que les caches connus ne couvrent pas : téléchargements interrompus (
+223	Ce que tu veux faire avec l'agent : moins d'outils = prompt plus court = réponse plus rapide au démarrage. Modifiable à tout moment (le changement fait relire le prompt une fois).
+224	Ce qui est utilisé par tes outils (voix, génération d'images…) sera retéléchargé au prochain lancement.
+225	Celui de la discussion
+226	Celui de la discussion (déjà chargé)
+227	Ces modèles des repos actifs ont déjà une copie
+228	Change de filtre, ou ajoute un dossier dans Réglages › Dossiers suivis.
+229	Chaque conversation en plus garde environ 2 Go de mémoire graphique. Une seule suffit : une tâche de fond en ouvre une seconde toute seule, le temps qu’elle tourne.
+230	Chaque outil exposé au modèle est relu à chaque conversation : sur un gros modèle lent, cela se compte en minutes.
+231	Chaque outil proposé au modèle est du texte qu'il doit relire à chaque nouvelle session (≈ 3 s par millier de tokens). Moins d'outils inutiles = réponse plus rapide au démarrage, avec la même qualité tant que le modèle n'a pas besoin de ce qu'on retire.
+232	Chaque outil proposé est relu à chaque conversation. Automatique ne garde que ceux dont la demande a besoin : plus rapide.
+233	Chaque suppression est notée dans le journal du ménage.
+234	chargé
+235	Charge de la machine
+236	Chargement automatique désactivé.
+237	Chargement des modèles gratuits…
+238	Chargement du modèle en mémoire
+239	chargement du modèle…
+240	Chargement du modèle…
+241	Chargement…
+242	Charger au démarrage
+243	Charger automatiquement le dernier modèle utilisé au démarrage de PAIZ
+244	Charger la sélection (
+245	Charger la suite
+246	Charger plus
+247	Charger tout ce qui est dispo
+248	Chasse tirée :
+249	Chercher
+250	Chercher ce fichier sur Hugging Face
+251	Chercher dans la mémoire et les anciennes conversations…
+252	Chercher un modèle
+253	Chercher un modèle…
+254	Choisir des disques spacieux, pas besoin de SSD
+255	Choisir le modèle de cette session : local ou cloud gratuit (OpenCode)
+256	Choisis un disque saturé, le dispenser propose les plus gros modèles à renvoyer vers une racine d'archive.
+257	Choisis un modèle
+258	Choisis un profil selon ce que tu veux faire
+259	Choisis un repo actif pour :
+260	Choisis une rubrique ou lance une recherche.
+261	ci-dessous seront supprimés définitivement. Les bibliothèques d'applis (Ollama, LM Studio…) ne sont pas touchées.
+262	Claude Code (bientôt)
+263	Clé : sk-local
+264	Clé API : sk-local Modèle :
+265	Cliquer pour définir les dossiers
+266	Cliquer pour regrouper par base
+267	Cliquer pour regrouper par emplacement
+268	Cliquer pour regrouper par type
+269	Coche, dans chaque groupe, toutes les copies sauf la première de la liste
+270	Cocher tout ce qui est dispo
+271	Coder avec OpenCode, branché sur PAIZ
+272	Colle l'adresse d'un dépôt GitHub.
+273	Combien
+274	Combien de mémoire il prend (le changer recharge le modèle)
+275	Combien de texte le modèle garde en tête pendant une conversation. Plus c’est long, plus il faut de mémoire. 16 000 convient aux agents de code.
+276	Composants
+277	Composants partagés
+278	Compression de cette mémoire
+279	Configuration mise à jour.
+280	Consommation de jetons : local et distant
+281	Continue exactement là où tu t’es arrêté, sans répéter ce qui précède.
+282	Continue là où tu t'étais arrêté.
+283	ControlNet/
+284	Conversations en même temps
+285	Conversations en mémoire (slots)
+286	Copie active (sera retirée)
+287	copie de
+288	copie des dossiers de modèles…
+289	Copie gardée en stockage
+290	Copie incrémentale (robocopy) d'une racine de modèles vers un autre disque : seuls les fichiers nouveaux ou modifiés sont copiés, rien n'est supprimé à destination.
+291	Copié.
+292	Copier
+293	copier au lieu de déplacer
+294	Copier ce message
+295	Copier la config JSON
+296	Copies en trop (garder la 1ère)
+297	Corbeille
+298	Corbeille Windows : récupérable, la place revient en la vidant
+299	Corbeille Windows : récupérable, mais la place n'est rendue qu'en la vidant
+300	Crée une copie plus petite et plus rapide, à côté de l’original (qui ne bouge pas). Plus c’est léger, moins c’est fiable.
+301	Crée une vraie session dans ce projet avec cette conversation, pour que le modèle puisse travailler avec les outils
+302	Créer
+303	dans la file
+304	dans un même repo actif. PAIZ ne choisit rien à ta place : tu coches, tu choisis corbeille ou effacement.
+305	dans un repo de stockage : ils occupent la place deux fois. « Libérer » vérifie d'abord que les deux fichiers sont strictement identiques (SHA-256 des deux), retient leur adresse exacte, puis retire la copie active. Un clic sur « Invoquer » les remet ensuite
+306	Date
+307	Date ↑
+308	Date ↓
+309	de
+310	de caches récupérables${libTotal ?
+311	de chaque fichier (d'où il vient) et une copie des listes de configuration (sans les modèles). « Ranger » y met les modèles au bon endroit, « Invoquer » les remet à leur adresse exacte ; un fichier sans adresse connue retourne dans le dossier que ton install Stable Diffusion utilise déjà pour ce type.
+312	de VRAM
+313	décision
+314	Décocher les sépare : PAIZ retiendra que ce modèle a besoin d'eux pour fonctionner.
+315	Définis d'abord un repo actif.
+316	déjà actif
+317	Déjà ajouté
+318	déjà bien rangé(s) ·
+319	Demande envoyée : les éléments arriveront dans la To-do.
+320	Demander
+321	Déplacement lancé :
+322	Déplacer
+323	déplacer (libère la source)
+324	Déplacer ici
+325	Déplacer la sélection
+326	Déplacer…
+327	Dépôt
+328	dépôt ↗
+329	Depuis
+330	Dernier usage
+331	dernière copie des dossiers de modèles
+332	Dernière fois
+333	Dernière modification
+334	Dernière requête vue :
+335	Dernières erreurs distantes
+336	Dernières opérations effectuées par le dispenser.
+337	des moteurs tournent sans PAIZ et prennent de la mémoire
+338	des skills actifs sont ajoutés au prompt. Un skill peut contenir des scripts que le modèle lancera : n'installe que des sources que tu connais. Tout s'installe
+339	désactivé
+340	désactivé : le modèle ne le voit pas
+341	désactivé. Le modèle ne peut pas appeler un outil retiré ; recoche-le et il revient à la requête suivante.
+342	Destination
+343	Détails
+344	détails ▸
+345	Détecté : Node
+346	Dis-le au modèle : « résume les idées qu’on a eues » · « note cette idée : … » · « tire de la discussion un cahier des charges et note-le »
+347	Discussion transmise
+348	discutable : peu ou plus utilisé, ou pas encore assez de recul
+349	Discuter avec le modèle chargé, sans projet ni session
+350	Disques
+351	Disques fixes et amovibles, plus les caches HuggingFace / LM Studio. Annulable à tout moment.
+352	Données & API
+353	dossier
+354	Dossier _PAIZ/trace.json présent
+355	Dossier de destination
+356	Dossier de destination, ex. F:\\Sauvegardes
+357	Dossier du moteur
+358	Dossier du projet, ex. D:/005-GIT/mon-projet
+359	Dossier WeightStream
+360	Dossier, ex. D:/005-GIT/mon-projet
+361	dossier(s) visité(s) ·
+362	dossiers d’applis IA détectés, à valider
+363	Dossiers définis (
+364	Double-clic pour renommer
+365	Doublons
+366	doublons, caches, restes et modèles jamais utilisés
+367	échec
+368	Échec.
+369	eco : le moins de RAM/VRAM, le plus lent · dialogue : sobre (Gemma ≈ 13 tok/s, ≈ 7,4 Go de VRAM) · vif : ≈ 22 tok/s · rapide : ≈ 43 tok/s (≈ 10 Go de VRAM) · confort : plus rapide · tâche de fond : géants en arrière-plan · cpu : aucun expert en VRAM · partage / fond : caches calculés d'après la RAM et la VRAM réellement libres, puis régulés pendant la génération (partage laisse de la place aux autres programmes) · paliers : taille du cache choisie au début de chaque message d'après la RAM libre, puis fixe pendant la génération
+370	écran Travail, toutes les 10 minutes et à l
+371	Écris un message ci-dessous pour tester le modèle chargé. Rien n'est gardé dans une session.
+372	écriture
+373	Écriture
+374	Écurie
+375	écurie propre
+376	Écurie propre
+377	Efface pour de bon, sans corbeille
+378	Effacement direct de la copie ACTIVE (la copie de stockage est vérifiée identique) : place rendue tout de suite
+379	Effacement direct, place rendue tout de suite
+380	Effacer
+381	Effacer DÉFINITIVEMENT
+382	Effacer définitivement ?
+383	Effacer définitivement ses conversations
+384	effacer directement, sans corbeille (irréversible, comme Maj+Suppr)
+385	Élément
+386	élément(s)
+387	élément(s) : fichiers temporaires, téléchargements interrompus, dossiers vides
+388	élément(s) ·
+389	élément(s) retiré(s) (
+390	Elle part dans la file, ou reste en brouillon si tu veux la relire avant. Un autre modèle que celui de la discussion se lance à côté, le temps de la file.
+391	Emplacement
+392	Emplacements utilisés
+393	En brouillon
+394	en choisit aucun à ta place. Règle-les dans l
+395	En pause · point de reprise enregistré
+396	En réserve
+397	encodeur de texte
+398	Encodeurs de texte, VAE, CLIP vision : un seul exemplaire sur le disque, rendu visible dans le dossier de chaque programme (lien dur sur le même disque, lien symbolique entre disques) pour qu’ils ne soient pas re-téléchargés avec chaque modèle maître.
+399	encodeurs, VAE… visibles par chaque appli sans doublon
+400	Enregistré.
+401	Enregistrer
+402	Enregistrer ce dossier comme racine gérée
+403	Énumération des volumes locaux. Le scan va démarrer en mode doux.
+404	Envoie le modèle dans un repo de stockage (déplacement vérifié)
+405	Envoyer ce texte comme cahier des charges au gros modèle local (file des tâches)
+406	Erreur :
+407	Essai indisponible pour un serveur distant
+408	Essayer la nouvelle interface, plus simple (tu peux revenir à celle-ci depuis ses Réglages)
+409	est branché dans PAIZ : ces modèles passent par l
+410	est lancé (fenêtre séparée).
+411	est possible. Les limites d
+412	étape suivante retenue
+413	État
+414	État relevé par Windows (SMART / compteurs de fiabilité). Ne stocke rien d'important sur un disque « à surveiller ».
+415	Éteindre ces outils
+416	Êtes-vous sûr ? Cet effacement est DÉFINITIF : le fichier ne passe pas par la corbeille et ne pourra pas être récupéré.
+417	étiquette pour le détail.
+418	Étiquettes
+419	Exécutable ws_npc_server
+420	exécute du code sur ta machine
+421	Explore un disque ou un dossier, et indexe tout ce qui ressemble à un modèle IA. Les fichiers trouvés hors racine sont marqués « non gérés » : tu peux ensuite les adopter.
+422	external — dossier externe
+423	Fabriquer une version plus légère de ce modèle (avec perte)
+424	Faire de ce repo une écurie propre
+425	Faire de la place
+426	Faire rédiger un plan par un modèle à partir de cette discussion (il arrive en brouillon dans la barre des tâches)
+427	Faire retenir ce message par la mémoire du projet
+428	Fermer
+429	Fermer ce message
+430	Fermer ce projet
+431	Fermer cette conversation
+432	Fermer l'aperçu
+433	Fermer…
+434	Fichier
+435	Fichier à télécharger
+436	fichier(s) · jusqu'à
+437	fichier(s) à ranger (
+438	fichier(s) dans l'arborescence propre ? Renommages instantanés sur le même disque, rien n'est effacé, un journal permet d'annuler.
+439	fichier(s) ignoré(s)
+440	fichier(s) libéré(s) (
+441	fichier(s) rangé(s)${r.failed.length ?
+442	Fichiers ajoutés comme « non gérés » : tu peux les adopter ci-dessous.
+443	Fichiers associés
+444	Filtrer :
+445	Fois
+446	Fonctionne avec la bibliothèque officielle, y compris les appels d'outils.
+447	Format «
+448	fusionné
+449	garde la
+450	Garde les dépôts qui ont au moins une quantification de cette taille ou moins
+451	Garde un seul exemplaire sur le disque, MAIS tous les chemins continuent de fonctionner (lien dur) : rien ne casse pour SwarmUI, ComfyUI, etc. Même disque obligatoire ; contenu vérifié octet par octet.
+452	Garder cette copie et mettre les autres à la corbeille
+453	Garder la première
+454	Gérer les repos…
+455	Gestion :
+456	GGUF seulement
+457	Glisser pour ajuster la largeur (double-clic : par défaut)
+458	Go
+459	Go à libérer
+460	Go selon la quantification
+461	Groupes de fichiers identiques présents à plusieurs endroits. Clic : ouvrir l’onglet Doublons.
+462	historique horaire est gardé même si une session est effacée)${u.since ? ` depuis le ${new Date(u.since).toLocaleDateString(
+463	Hugging Face, PyTorch, Whisper, Coqui TTS, llama.cpp… Les applications re-téléchargent ce dont elles ont encore besoin ; Ollama, LM Studio, GPT4All et Jan sont listés à part (ce sont de vrais modèles).
+464	Hugging Face, PyTorch… : ce qui sert encore sera retéléchargé
+465	idée
+466	Idée enregistrée.
+467	identité
+468	Ignorer
+469	Ils seront installés désactivés. Un skill peut contenir des scripts : vérifie la source.
+470	image · vidéo
+471	image · vidéo · autre
+472	Images et vidéo
+473	Importance (4-5 : toujours rappelée)
+474	important : appelé récemment (ou outil de base)
+475	Indique un dossier à scanner.
+476	Indique un dossier.
+477	Installer
+478	Interface
+479	interface est réinstallée. Les dossiers ne sont jamais supprimés d
+480	Interrompu : mémoire critique${a.memFreeMib != null ?
+481	inutile : jamais appelé depuis le début de cette conversation
+482	Inverser
+483	Jamais
+484	jamais appelé
+485	jamais utilisé
+486	Jamais utilisés
+487	jetons conservés
+488	Joindre des images
+489	Journal
+490	jours de suivi, « étoile » à
+491	jours sans usage, « jamais utilisé » après
+492	Jusqu’à la fin (recommandé)
+493	l'étape en cours se termine
+494	l’œil de PAIZ regarde l’image, puis lecture du prompt
+495	La carte graphique va plus vite. La mémoire vive laisse la carte libre pour un jeu ou une autre appli. Adaptatif suit la mémoire libre de la machine.
+496	La corbeille est vide.
+497	La version extra-light de ce modèle n’existe pas encore.
+498	Lance une conversation (écran Travail ou OpenCode) : la liste des outils réellement envoyés au modèle apparaît ici.
+499	Lancement au démarrage désactivé.
+500	Lancer
+501	Lancer au démarrage de PAIZ
+502	Lancer le dernier modèle utilisé quand PAIZ s’ouvre
+503	Lancer le transfert
+504	Le dernier modèle se chargera au démarrage de PAIZ.
+505	Le dernier modèle se lancera au démarrage de PAIZ.
+506	Le dossier est créé s'il n'existe pas. Rien n'est déplacé ni supprimé : PAIZ le surveille et y range les modèles quand tu le demandes. Un modèle déjà présent dans ce dossier apparaît après un scan.
+507	Le fichier existe mais son dossier n\'est plus un repo
+508	Le fichier n’existe plus : le retirer de l’index
+509	Le modèle
+510	Le modèle (
+511	Le moteur se lance dès l'ouverture de PAIZ (si la mémoire libre le permet) : le modèle est prêt quand tu arrives. Même réglage que sur l'écran Travail.
+512	Le moustachu
+513	Le programme est stoppé immédiatement ; ce qu'il avait en mémoire est perdu.
+514	Léa
+515	Lecteurs :
+516	Lecture des disques…
+517	Lecture des fichiers…
+518	Lecture du catalogue…
+519	lecture du prompt
+520	Lecture du prompt
+521	Lecture du prompt, écriture de la réponse, puis durée totale (de la demande à la fin)
+522	Lecture…
+523	Légère
+524	Léo
+525	les 12 derniers messages
+526	les 30 derniers messages
+527	les 6 derniers messages
+528	Les dossiers du SSD de travail où les modèles sont chargés (rapide). Tu peux en définir plusieurs : par exemple C:\\llm-models et un autre dossier.
+529	Les dossiers où ranger les modèles que tu n'utilises pas en ce moment : disque dur, disque externe… la vitesse importe peu.
+530	Les fichiers dans une racine existante restent rattachés ; les autres sont « non gérés » et apparaissent ci-dessous.
+531	Les plus récemment rangés ou invoqués sont en haut.
+532	Libérer → corbeille
+533	Libérer → effacer la copie active
+534	Libérer de la place sur les repos actifs
+535	libérés.
+536	libérés${r.failed?.length ?
+537	libres seulement. Choisis un fichier plus léger ou une autre destination.
+538	Lien créé (
+539	lien(s) créé(s).${bad.length ?
+540	lien(s) vers les exemplaires existants ? Aucun fichier n’est copié ni supprimé ; chaque lien peut être remplacé par une vraie copie ensuite.
+541	Liés
+542	Likes
+543	Liste détaillée
+544	LLM/&lt;famille&gt;/&lt;modèle&gt;/
+545	LOCAL MODELS
+546	Lus (entrée)
+547	Manuelle
+548	Même disque : les déplacements sont des renommages instantanés (aucune copie, aucun risque pour les fichiers). Le journal permet d'annuler.
+549	Même empreinte rapide (taille + début + fin de fichier) sur un ou plusieurs disques. Par défaut les fichiers partent dans la corbeille Windows de leur propre disque (à vider pour libérer la place). Coche la case pour les effacer directement.
+550	Même fichier ailleurs
+551	Même repo pour tous
+552	Mémoire : ce que les assistants retiennent du projet et de toi
+553	Mémoire active
+554	Mémoire de conversation
+555	Mémoire graphique :
+556	Mémoire vive :
+557	Ménage
+558	Mes serveurs
+559	Met à la corbeille toutes les copies sauf la première de la liste
+560	Mets ces trois valeurs dans « fournisseur compatible OpenAI / personnalisé » (la clé API est ignorée mais souvent obligatoire).
+561	Mettre à jour la trace
+562	Mettre à la corbeille ?
+563	Mettre à la corbeille (Maj + clic : effacer définitivement, sans corbeille)
+564	Mettre ce texte dans la file des tâches du gros modèle local au lieu de le poser dans la discussion
+565	Mettre cette copie à la corbeille
+566	Mettre en file
+567	Mettre en pause avec un point de reprise
+568	mis à jour ·
+569	Mis à la corbeille.
+570	Mode doux : parcourt les disques locaux en tâche de fond, sans bloquer l'interface. Il ignore les fichiers de moins de 1 Mo et les dossiers système. Les modèles trouvés hors racine sont marqués « non gérés ».
+571	modèle
+572	Modèle
+573	Modèle chargé (
+574	Modèle dense (pas de streaming d’experts).
+575	Modèle MoE : WeightStream streame les experts depuis le SSD.
+576	modèle(s) : ⭐
+577	modèle(s) ·
+578	modèle(s) · +
+579	modèle(s) (
+580	modèle(s) actifs (
+581	modèle(s) sur les disques rapides, sans usage récent
+582	modèle(s) trouvé(s)
+583	modèle(s).
+584	modèles
+585	Modèles
+586	Modèles encore dans le catalogue mais dont le fichier a disparu du disque (supprimé ou déplacé hors de PAIZ, disque débranché). Clic : n’afficher que ceux-là, pour les retirer de l’index.
+587	Modèles indexés
+588	Modèles jamais utilisés
+589	Modèles non gérés
+590	Modèles trouvés par le scanner hors de tes racines (dossiers déclarés dans Réglages). PAIZ ne les range pas tant que tu ne les adoptes pas. Clic : ne montrer que ceux-là.
+591	Moins d'outils proposés au modèle = prompt plus court = réponse plus rapide au démarrage. Tu pourras changer à tout moment, même en pleine session (⚖ Outils).
+592	Moteur : réglages rapides
+593	Moteur arrêté.
+594	Moteur interrompu · travail conservé, prêt à reprendre
+595	Moteur WeightStream
+596	Moteur…
+597	Moteurs égarés
+598	Ne plus considérer ce dossier
+599	Niveau actuel :
+600	Niveau de compression
+601	Nom A→Z
+602	nom et la description
+603	Non classé
+604	non géré
+605	non gérés
+606	Non gérés
+607	Note cette idée dans la To-do :
+608	Noté dans la To-do du projet.
+609	Note enregistrée.
+610	Noter ce message dans la To-do du projet
+611	Nouvelle idée (titre)
+612	œil de PAIZ :
+613	ONLINE CATALOG
+614	OpenClaw (bientôt)
+615	OpenCode
+616	OpenCode branché (
+617	OpenCode ouvert dans
+618	OpenCode relancé avec la nouvelle liste de skills.
+619	Options supplémentaires
+620	Options supplémentaires du moteur
+621	Origine
+622	Où
+623	où il vient pour le remettre exactement là avec « Invoquer ».`}${warn.length ? `
+624	Où le modèle travaille : sur la carte graphique, sur la mémoire vive, ou en s’adaptant à la machine
+625	Outil
+626	outil partent chez le fournisseur : 🔴 = données utilisées / journalisées, 🟡 = conservées ou limitées, 🟢 = zéro rétention annoncée (d
+627	Outils
+628	Outils de l'agent : profils d'usage (discussion, code, recherche…) et allègement du prompt
+629	outils jamais appelés (${sug.names.map(esc).join(
+630	Outils proposés au modèle
+631	Ouvre OpenCode dans une console, sur le dossier de ton choix, déjà réglé sur WeightStream (config isolée : ta config OpenCode n'est pas modifiée). Il lit et modifie les fichiers de ce dossier. Le moteur doit être lancé.
+632	Ouvrir la fiche du modèle
+633	Ouvrir la page du modèle sur Hugging Face
+634	Ouvrir OpenCode
+635	PAIZ ne l’a jamais lancé. Il sert peut-être à une autre appli (SwarmUI, ComfyUI…), que PAIZ ne voit pas.
+636	PAIZ ne voit que ce qui passe par lui (son moteur et son relais /v1) : un modèle « jamais utilisé » l’est peut-être depuis un autre programme. Un modèle est « ancien » après
+637	PAIZ-WeightStream — modèles locaux
+638	Parcourir les dossiers
+639	Parcourir…
+640	pas assez de place
+641	Pas assez de place :
+642	pas de carte NVIDIA
+643	Pas de fichier en double
+644	pas lancés par cette session de PAIZ
+645	Passer en
+646	Passer en session dans
+647	Pastilles :
+648	Pause exacte de la tâche en cours
+649	peuvent être récupérés. Rien n'est coché d'avance.
+650	Photo des
+651	pile au même endroit
+652	Place récupérable
+653	plan à relire avant de lancer
+654	Plan prêt : «
+655	Plus aimés
+656	Plus aucun modèle : enregistre pour valider, ou reviens à la liste.
+657	Plus on quantifie, plus le modèle perd en qualité
+658	Plus téléchargés
+659	Poids
+660	Poids des fichiers GGUF du dépôt : de la plus légère à la plus lourde quantification
+661	Point de reprise en cours
+662	Port de l'API
+663	Port de l’API
+664	Préchauffage du prompt (la 1re fois ≈ 20 s)
+665	Précision du cache KV
+666	Précisions pour le plan (facultatif)…
+667	préférence
+668	Préparer le plan de rangement
+669	Prérequis : Node.js (npx)
+670	Prérequis absent de cette machine
+671	Présents
+672	prête : elle apparaît en orange dans la liste.
+673	Prêts à lancer
+674	Pris en compte au prochain lancement d'un modèle
+675	Profil par défaut
+676	Programme
+677	Programme du moteur
+678	Programmes
+679	projets · discussion en direct · contrôle
+680	Proposer un plan
+681	Quantifier
+682	Que veux-tu faire ?
+683	Quel modèle sert, quand, par quel programme, d’où il vient, et ce qui dort sur tes disques depuis trop longtemps.
+684	Racines de stockage
+685	Rangé
+686	ranger tes modèles · les servir à OpenCode
+687	rangés sur les disques de stockage
+688	Rapatrie le modèle dans un repo actif
+689	Rattaché à la racine «
+690	Récents
+691	Rechargement du modèle, le travail reprendra de son dernier point de reprise…
+692	Rechargement du modèle…
+693	Recharger une configuration sauvegardée
+694	Recherche des disques…
+695	Recherche des restes oubliés…
+696	Recherche et tri par popularité. Rien n'est téléchargé sans ton clic ; chaque fichier est vérifié (taille + SHA-256 publié) et la place du disque est contrôlée avant. Seuls tes mots de recherche sont envoyés à Hugging Face.
+697	Recherche…
+698	récupérables
+699	Rédaction du plan lancée : tu peux continuer à discuter.
+700	Redevenir repo ordinaire
+701	Rédigé par
+702	Rédiger le plan
+703	Réduire la place prise par la conversation. « Réduite » ne change presque rien ; « Très réduite » change un peu le texte produit.
+704	Réduite (−47 %)
+705	Réécrit _PAIZ/trace.json et la copie des configurations
+706	Registre officiel MCP : outils vérifiés par PAIZ (✓) et recherche libre. N'importe qui y publie, regarde le dépôt avant d'installer. Ajouter ne lance rien : le serveur arrive désactivé.
+707	Réglage par défaut
+708	Réglages
+709	Réglages admin → Connexions → OpenAI → « + ».
+710	Réglages du moteur
+711	Réglages du moteur enregistrés.
+712	Réglages enregistrés.
+713	Regroupé par
+714	Réinitialiser
+715	Réinstaller
+716	Relancer
+717	Relancer le moteur : le travail repart de son dernier point de reprise
+718	Relit les métadonnées de tous les fichiers
+719	Remet les fichiers où ils étaient avant le dernier rangement
+720	Remettre dans la liste
+721	Remplacer ce lien par une vraie copie du fichier ? (prend de la place disque ; l’exemplaire d’origine n’est pas touché)
+722	Rend le fichier visible ici (lien) : le programme ne le re-téléchargera pas
+723	Rendre ce projet privé efface ce que la mémoire en avait retenu. Continuer ?
+724	repo de stockage
+725	Repo marqué « écurie propre » : les prochains rangements y seront classés.
+726	Réponse max
+727	Réponse maximale
+728	Réponses
+729	Réponses en erreur
+730	Repos de stockage
+731	Reprendre exactement là où le travail s'est arrêté
+732	requêtes de suite est éteint (🔒 = jamais)
+733	Réserve rangée
+734	Restaurer
+735	Restes oubliés
+736	résultat
+737	résultat(s)
+738	Retenu dans la mémoire du projet.
+739	Retirer
+740	Retirer ce modèle de la configuration
+741	Retirer de la file
+742	Retirer les tâches terminées
+743	Retour à la conversation
+744	Revenir à l'ancienne interface
+745	Revenir à la vue plate
+746	Rien à charger : aucun modèle « dispo » coché.
+747	Rien à déplacer
+748	Rien à libérer : aucune copie en double entre tes repos actifs et ton stockage.
+749	Rien à ranger : tout est déjà à sa place.
+750	Rien avec ces filtres (décoche-en un).
+751	Rien de ce projet n’est lu, noté ni rappelé ; ce qui avait été retenu est effacé
+752	Rien de coché.
+753	Rien en attente
+754	Rien ici.
+755	Rien n'est effacé.
+756	Rien n’est supprimé sans ton clic. Clique une tuile pour voir le détail et choisir.
+757	Rien ne se fait sans ton clic
+758	Rien pour l’instant. Note une idée ici, avec « 📝 Noter » sous un message, ou demande-le au modèle.
+759	Rien sur cette période.
+760	Rien sur les dernières 24 h.
+761	Rien trouvé.
+762	s'est arrêté (code
+763	Sa fiche s’ouvre ici : infos, utilisation, modèles liés, version légère.
+764	sans clé d'API
+765	Sans emplacement
+766	Sans titre
+767	santé · chasse d'eau · sauvegardes
+768	Santé des disques
+769	Sauvegarde lancée.
+770	Sauvegardée le
+771	Sauvegarder
+772	Sauvegarder la liste des modèles actifs
+773	Scanner
+774	Scanner les disques
+775	Scanner tous les disques
+776	Scanner un dossier
+777	SDXL & dérivés (Pony, Illustrious…)
+778	Sélection :
+779	Sélectionne au moins un modèle.
+780	Sélectionné et vérifié par PAIZ
+781	Sélectionne un projet et une session.
+782	Sélectionner
+783	Sélectionner (Maj+clic : toute une plage)
+784	Sélectionner cette copie (Maj+clic : plage)
+785	Sélectionnez un SSD
+786	Selon le caractère
+787	session(s)) : effacer une session efface aussi son décompte. Le mode Test n
+788	Seulement les modèles des repos actifs (sur le SSD, prêts à servir)
+789	Seulement les modèles des repos de stockage (rangés)
+790	skill(s) installé(s), désactivé(s) : coche ceux que tu veux utiliser.
+791	Sortir
+792	souvent utilisé
+793	Statut
+794	stocké
+795	Suivi depuis le
+796	Suppression définitive (pas de corbeille).
+797	Supprimer
+798	Supprimer cet élément
+799	Supprimer cet élément ?
+800	Supprimer cette configuration
+801	Supprimer la configuration «
+802	Supprimer le skill «
+803	sur
+804	sur ce disque.
+805	sur le SSD rapide
+806	sur les disques lents.
+807	Tâche lancée.
+808	Taille
+809	Taille ↑
+810	Taille ↓
+811	tant que tu ne l'actives pas, et
+812	Téléchargement lancé (suivi dans l'onglet Découvrir).
+813	Téléchargement…
+814	Téléchargements
+815	Télécharger
+816	Télécharger les skills de :
+817	Température
+818	Tendance
+819	Terminé
+820	terminée
+821	Test rapide en ligne de commande.
+822	Texte ajouté au prompt par ce skill
+823	To-do mise à jour.
+824	tokens · outils proposés ≈
+825	Ton catalogue est propre de ce côté.
+826	ton modèle chargé dans PAIZ
+827	Total
+828	Tous ces services parlent à la même adresse :
+829	Tous les
+830	Tous les emplacements
+831	Tous les modèles
+832	Tous les modèles trouvés sont rattachés à une racine (ou tu n'as pas encore scanné).
+833	Tous les projets et conversations, où ils sont
+834	Tous servent, ou le suivi est trop récent
+835	Tout
+836	Tout cocher
+837	Tout décocher
+838	Tout désélectionner
+839	Tout sélectionner
+840	Tout sélectionner / désélectionner (les modèles affichés)
+841	Tout vider
+842	toute la discussion
+843	Toute la famille —
+844	Toutes catégories
+845	Toutes les bases
+846	Trace mise à jour (
+847	Travail
+848	Très réduite (−72 %, change le texte)
+849	Trouver mes modèles
+850	Trouvés lors d'un scan mais hors de toute racine. Adopte-les pour les ranger dans une racine (copie ou déplacement).
+851	Tu utilises la
+852	Type
+853	Un « serveur MCP » permet au modèle de piloter un autre logiciel : Blender, ComfyUI, Godot… Chaque serveur est
+854	Un « skill » est un dossier de consignes (parfois avec des scripts) que le modèle ouvre quand la tâche s'y prête. Seuls le
+855	Un modèle rédige le plan de la tâche à partir de la discussion. Il arrive dans la barre des tâches en brouillon : tu le relis avant de lancer quoi que ce soit.
+856	Un repo de stockage rangé comme une vraie écurie :
+857	Une racine = un dossier sur un disque. Le dispenser peut en gérer plusieurs, sur des disques différents. Rien n'est centralisé de force.
+858	Une version ≤
+859	URL de base :
+860	Usage
+861	usages ou plus récents.
+862	Utilise
+863	Utilisé par
+864	Utiliser comme emplacement
+865	VAE/
+866	Verrouillé : jamais éteint automatiquement
+867	Verrouiller : ne jamais l’éteindre automatiquement
+868	Version allégée (avec perte) : plus rapide, moins fiable
+869	Version allégée avec perte : utilisée par le mode extra-light
+870	Version légère : plus rapide, moins fiable. Elle a un seul réglage, rien à choisir.
+871	Version légère de
+872	Version légère en préparation : elle apparaîtra dans la collection.
+873	Vide. Les projets et conversations jetés restent ici 7 jours.
+874	Vider
+875	Voir /api/state
+876	Voir le contenu
+877	Volume des sons de dialogue
+878	Vrai fichier à cet endroit
+879	Vraie copie restaurée.
+880	Vu récemment
+881	Vue regroupée par
+882	— catalogue et échange de modèles IA Commandes: serve [--port 7788] [--no-open] Lance l'interface web init Initialise la base locale add-root
+883	: chemin introuvable (disque débranché ?) — ignoré
+884	: si ça tombe bien, tu peux demander une fois s'il veut continuer ou faire une pause, sans insister.
+885	· Groupes de doublons:
+886	" retirée (les fichiers restent sur le disque).
+887	» dépasse 200 Mo.
+888	» est la racine d'un disque : choisis un sous-dossier précis pour le projet.
+889	» est protégé (
+890	»). Vérifie que l'appli ne cherche pas ce fichier à CET endroit.
+891	(build : scripts\\build-ws-tools.ps1 dans WeightStream, ou réglage engine.exe)
+892	(d’après le nom)
+893	(même repo «
+894	(retirés :
+895	) : le modèle n'a pas le droit de travailler là.
+896	) : partiel gardé pour reprise.
+897	[--copy] Déplace (ou copie) un modèle trash
+898	[--hard] Crée un lien symbolique/physique hash
+899	[--quick] Calcule le SHA-256 complet stats Statistiques du catalogue open Ouvre le dossier de données Données:
+900	[--role store|active|external] roots Liste les racines rm-root
+901	[Image jointe, décrite par l'œil de PAIZ :
+902	[Mémoire PAIZ — ce que tu sais de l’utilisateur et du projet ; ne la récite pas, sers-t’en seulement si c’est utile]
+903	[paiz] chargement du modèle en mémoire…
+904	[paiz] modèle chargé en
+905	[paiz] préchauffage du prompt…
+906	[paiz] préchauffage échoué :
+907	[paiz] préchauffage fait en
+908	[paiz] préchauffage ignoré :
+909	✔ Base initialisée:
+910	🙂 Léger
+911	0,7 Go RAM + 5 Go de cache VRAM (≈ 8,3 Go de VRAM au total). Mesuré sur Gemma 4 26B : ≈ 22 tok/s.
+912	0,7 Go RAM + 7 Go de cache VRAM (≈ 10,2 Go de VRAM au total). Mesuré sur Gemma 4 26B : ≈ 43 tok/s. Ferme les programmes gourmands en VRAM.
+913	100 requêtes/jour
+914	3 Go RAM + 1 Go VRAM pour les experts. Bon compromis au quotidien.
+915	8 Go RAM + 5 Go VRAM. Rapide ; la VRAM monte à ~11,6 Go : ferme les autres programmes GPU.
+916	a été retiré : on ne laisse pas une fausse adresse d
+917	à fond : maximum
+918	à la fin (le moteur s
+919	à la To-do
+920	à midi
+921	Agent Skills d’Addy Osmani — ingénierie (26 skills)
+922	ajouté
+923	ajouté(s),
+924	allégée par PAIZ (
+925	annulé (Windows a demandé confirmation)
+926	annulé dans Windows
+927	annulé par Windows
+928	associé
+929	Attention : un modèle trop quantifié peut devenir mauvais.
+930	au lieu de
+931	Aucun (rien ajouté)
+932	aucun début de prompt connu pour ce modèle
+933	Aucun des disques choisis n’est disponible.
+934	Aucun disque local détecté.
+935	Aucun doublon détecté.
+936	Aucun modèle mémorisé : charge-le une première fois depuis l'onglet WeightStream.
+937	Aucun modèle sélectionné.
+938	Aucun mod�le s�lectionn�.
+939	Aucun rangement à annuler.
+940	Aucun SKILL.md dans ce dépôt : ce n'est pas un skill.
+941	Aucune précision propre à ce modèle ; politique générale d'OpenCode : zéro rétention, pas d'entraînement.
+942	Aucune racine configurée. Utilise: paiz add-root
+943	autre disque : un lien dur est impossible
+944	autre(s) modèle(s) vers
+945	Bibliothèque d'Ollama : modèles à retirer plutôt avec « ollama rm ».
+946	Blender — 28 skills (modélisation, UV, PBR, rig, animation, export…)
+947	Bonnes pratiques d'ingénieur : découpage des tâches, sécurité, performance, accessibilité, API, documentation, revue de code, mise en production. Tout s'installe désactivé. Licence MIT.
+948	Brainstorming, plans écrits, développement piloté par les tests, débogage méthodique, revue de code, vérification avant de dire « fini ». Pensé pour les agents de code ; tout s'installe désactivé : active seulement ce qui te sert. Licence MIT.
+949	C’est déjà une vraie copie.
+950	Cache ajusté en continu selon la mémoire libre, même pendant la réponse. Poli mais lent.
+951	Cache d'une application que PAIZ ne connaît pas : vérifie avant de supprimer.
+952	Cahier des charges vide.
+953	ce disque n'a pas de corbeille Windows : utilise l'effacement
+954	ce disque n'a pas de corbeille Windows (USB, amovible ou réseau) : utilise « Effacer » pour le supprimer pour de bon
+955	Ce fichier n'est dans aucun projet connu de PAIZ : il ne sera pas lancé.
+956	Ce modèle est déjà quantifié : refaire une quantification cumule la perte (mieux vaut partir de l’original F16 / BF16 si tu l’as).
+957	Ce processus n’est plus un moteur égaré (déjà arrêté, ou lancé par PAIZ).
+958	Ce programme tourne déjà (■ Arrêter pour le fermer).
+959	Chargement de
+960	Chargement de la configuration «
+961	Checkpoint / modèle principal
+962	Chemin du lien manquant.
+963	Cherche sur le web (actualités, documentation). Tes requêtes de recherche partent chez Exa.
+964	chevauche la racine PAIZ «
+965	chevauche une racine PAIZ
+966	Choisis un repo actif existant pour «
+967	ComfyUI — écrire des workflows
+968	Compteurs détaillés indisponibles (boîtier USB ou droits) : seul l'état global est connu.
+969	Configuration du
+970	Conseil : pour ce travail, un modèle d'environ 15 Go suffit et laisse de la VRAM à ComfyUI (évite de recharger le gros modèle à chaque génération). Fourni avec PAIZ, rien à télécharger.
+971	contenu différent : ignorée
+972	cpu : sans carte graphique
+973	Déjà au niveau
+974	déjà disparu
+975	déjà fusionnée
+976	Déjà présent :
+977	délai dépassé
+978	Démarrage du moteur…
+979	démarrage…
+980	Déplacement
+981	Déplacement de
+982	Dépôt introuvable (ou privé).
+983	dernier modèle introuvable
+984	Des workflows Blender 5.x prêts pour un agent : modélisation, UV, matériaux PBR, baking, rigging, animation, géométrie nodes, export (Unity, Unreal, Godot…), contrôle qualité. Chaque skill vient avec des scripts testés. Licence MIT.
+985	destination déjà occupée
+986	Différence imperceptible en pratique.
+987	différent de celui publié par Hugging Face : fichier supprimé, relance le téléchargement.
+988	Dis ce que tu veux noter.
+989	DISQUE
+990	disque sans corbeille Windows
+991	Donne un nom au profil.
+992	Donne un nom au serveur.
+993	Données :
+994	Données conservées et utilisées pour améliorer le modèle.
+995	Données conservées, possiblement utilisées pour l'entraînement et la surveillance.
+996	Données possiblement utilisées pour améliorer le modèle ; conservées 30 jours.
+997	Dossier du programme absent :
+998	Dossier introuvable :
+999	Dossier introuvable.
+1000	Dossier source absent.
+1001	échec :
+1002	effacé
+1003	élément
+1004	emplacement inconnu ou déjà présent
+1005	En attente : aucun modèle local chargé
+1006	En attente : le modèle de la discussion finit de charger
+1007	En attente : pas assez de mémoire pour lancer
+1008	engine-aux
+1009	Entrée d'étagère inconnue.
+1010	Équivalent chinois de Hugging Face.
+1011	erreur(s) d'accès
+1012	Erreurs non corrigées :
+1013	Espace insuffisant sur
+1014	Espace récupérable:
+1015	Essai non disponible pour un serveur distant.
+1016	est arrêté (code
+1017	est compté qu
+1018	est lue qu
+1019	ÉTAT
+1020	État Windows :
+1021	éteint automatiquement
+1022	éteint par toi
+1023	exécution : une ancienne exécution qui finit de s
+1024	existe déjà et n'est pas un lien :
+1025	Experts calculés par le processeur, sans cache VRAM. Si la carte graphique est occupée.
+1026	Extraits retrouvés :
+1027	fichier
+1028	fichier absent
+1029	Fichier absent :
+1030	Fichier absent du disque:
+1031	Fichier absent.
+1032	Fichier du modèle absent.
+1033	Fichier introuvable :
+1034	Fichier introuvable.
+1035	fichier(s) déjà rangés en stockage
+1036	fichier(s) trouvé(s)
+1037	Fichiers de l’application LM Studio (runtimes, extensions) : pas de modèles ici, mais les vider casse l’appli jusqu’à sa réinstallation.
+1038	forcé : dossier .mdisp-trash
+1039	Format MXFP4 : à ne pas requantifier.
+1040	Fragments de téléchargement dédupliqués.
+1041	fusionnée
+1042	Go libres nécessaires.
+1043	Go nécessaires. Rien n'a été téléchargé : fais de la place ou choisis une autre destination.
+1044	Go sur
+1045	Go) : vitesse maximale, WeightStream n'a rien à streamer.
+1046	h de fonctionnement (disque âgé)
+1047	Honnête sur ta nature d'IA si on te le demande sincèrement. Messages de longueur humaine, sans listes à puces.
+1048	hôte refusé (
+1049	Idée inconnue.
+1050	Idée vide.
+1051	Identifiant de modèle invalide.
+1052	Identique à
+1053	Il faut au moins deux copies.
+1054	Il faut Blender 5.2 ou plus installé. Les 28 s'installent désactivés : n'active que blender-core (le point d'entrée) et ceux dont tu as besoin, car chaque skill actif ajoute son nom et sa description au prompt de chaque message.
+1055	Il revient après
+1056	Impossible de créer
+1057	Impossible de trouver un nom libre pour
+1058	inchangé(s),
+1059	Indique la commande à lancer.
+1060	Indique la destination: --to
+1061	Interpréteur introuvable (
+1062	introuvable dans l'index.
+1063	jamais par plaisir de blesser : tu constates, tu corriges, tu passes à la suite. C'est un rôle de comédie : reste exact et utile, sans mépris envers la personne. Pas d'émojis.
+1064	Juste discuter : aucun outil. Le prompt le plus court possible, la réponse la plus rapide.
+1065	l'ancienne place est occupée
+1066	l'après-midi
+1067	L'œil a répondu HTTP
+1068	l'œil de PAIZ est éteint (bouton 👁 en haut de la discussion)
+1069	L'œil n'a pas démarré.
+1070	L'œil n'a pas répondu à temps.
+1071	L'utilisateur est adulte : s'il le demande clairement, tu peux jouer un jeu de rôle romantique ou érotique, dans ton personnage, et tu changes de ton dès qu'il le souhaite.
+1072	La destination ne peut pas être dans la source.
+1073	La mémoire vive travaille, la carte graphique ne garde que 0,7 Go de cache : 8 Go de RAM + 0,7 Go de VRAM (≈ 4,4 Go de VRAM au total). Mesuré sur Gemma 4 26B : ≈ 9 tok/s. Laisse peu de RAM à la machine (≈ 2 Go).
+1074	La mémoire vive travaille, la carte graphique reste presque libre (pour un jeu, par exemple).
+1075	La source et la destination sont identiques.
+1076	La version extra-light existe déjà.
+1077	Le chemin existe déjà:
+1078	Le choix courant : bon équilibre taille / qualité.
+1079	Le dossier n'existe pas:
+1080	Le fichier existe déjà :
+1081	le fichier n'est plus là
+1082	le matin
+1083	Le minimum de mémoire (0,7 Go RAM, 0,5 Go VRAM). Le plus lent, machine libre.
+1084	le modèle
+1085	Le modèle écrit un film (scénario, images rendues dans Chrome, son généré) et produit un MP4. Licence MIT.
+1086	Le modèle est déjà dans ce repo.
+1087	Le modèle est déjà dans cette racine.
+1088	Le moteur a refusé la reprise (
+1089	Le moteur a refusé la vitesse :
+1090	Le moteur n'a pas gardé le travail interrompu (moteur sans reprise exacte, ou dossier de données changé).
+1091	Le moteur ne lit que des fichiers .gguf.
+1092	Le moteur suit la mémoire libre de la machine pendant qu’il travaille. Plus prudent que rapide : pour les gros modèles et le travail de fond.
+1093	Le moteur WeightStream ne répond pas sur le port
+1094	Le nom évoque une ancienne sauvegarde ou copie de cache.
+1095	Le pack open source d'Anthropic (documents Word/PDF/PowerPoint/Excel, design, création de skills…). Tout s'installe désactivé : active ceux dont tu as besoin.
+1096	Le plus sobre pour discuter : 0,7 Go RAM + 4 Go de cache VRAM (≈ 7,4 Go de VRAM au total). Mesuré sur Gemma 4 26B : ≈ 13 tok/s.
+1097	Le second moteur s’est arrêté au démarrage.
+1098	Le sélecteur de dossier n’est disponible que sous Windows.
+1099	le soir
+1100	Léa (amie)
+1101	léger : eco en mieux
+1102	Léo (ami)
+1103	les deux copies ne sont PAS identiques : rien n'a été touché
+1104	Les experts tiennent entièrement dans les caches :
+1105	Les outils que la conversation réclame (mots-clés : git, web, agents…). Le comportement d'origine.
+1106	Les poids non-experts ne tiennent pas dans la RAM une fois la marge de sécurité réservée.
+1107	Libérer
+1108	Licences variées selon le skill (certains sont « source disponible », pas libres) : regarde le LICENSE de chaque dossier.
+1109	lien non créé (
+1110	Lire, modifier, chercher dans les fichiers, terminal et liste de tâches. Sans web ni sous-agents.
+1111	llama-quantize a échoué (code
+1112	Ma collection
+1113	Même en streamant les experts, les poids non-experts (~
+1114	Mémoire :
+1115	Mémoire : variable, calculée d’après la RAM et la VRAM libres au moment du chargement.
+1116	mémoire basse (RAM
+1117	mémoire libre insuffisante
+1118	Met à la corbeille (.mdisp-trash) restore
+1119	mis à jour,
+1120	Modèle #
+1121	Modèle à accès restreint (compte Hugging Face requis).
+1122	Modèle de vision absent :
+1123	Modèle dense : WeightStream ne streame que les experts des modèles MoE. Il tournera avec llama.cpp classique, réparti entre la carte et la RAM, donc assez lent.
+1124	Modèle dense plus gros que la RAM + VRAM utilisables : le streaming d'experts ne s'applique pas à lui. Il faudrait le lire en continu sur le SSD (extrêmement lent).
+1125	Modèle inconnu du catalogue.
+1126	Modèle inconnu.
+1127	Modèle introuvable
+1128	Modèle introuvable:
+1129	Modèle introuvable.
+1130	Modèle invalide.
+1131	Modèle local (nom non relevé)
+1132	Modèle non autorisé : seuls le modèle local et les modèles gratuits d'OpenCode sont proposés.
+1133	Modèle prêt.
+1134	Modèle rangé.
+1135	Modèle restauré à son emplacement d'origine.
+1136	Modèle restauré dans
+1137	modèle trop gros
+1138	modèle(s) —
+1139	modèle(s) →
+1140	modèle(s),
+1141	MODÈLES
+1142	modèles —
+1143	Modèles de GPT4All.
+1144	Modèles de Jan.
+1145	Modèles de transcription.
+1146	Modèles tirés avec l'option -hf.
+1147	module d’image de ce modèle
+1148	Moteur
+1149	moteur de recherche bloqué
+1150	moteur déjà lancé
+1151	moteur-tâche
+1152	mots-clés
+1153	N’écris pas le code, seulement le plan. Ne recopie pas la discussion. Si la discussion hésite entre plusieurs options, garde celle que l’utilisateur a retenue en dernier.
+1154	N'utilise pas d'émojis.
+1155	Ne le répète pas, tiens-en compte seulement.]
+1156	nécessaires (marge incluse). Libère de la place ou choisis un autre emplacement : rien n'a été déplacé.
+1157	nécessaires (marge incluse). Rien n'a été déplacé.
+1158	Niveau de quantification d’origine inconnu : rien n’est proposé pour éviter une mauvaise surprise.
+1159	Nom de racine requis
+1160	Nom et chemin requis
+1161	Non gérés:
+1162	non proposé pour ce modèle.
+1163	normal : équilibré
+1164	Nouvel emplacement de la bibliothèque LM Studio.
+1165	NVIDIA : usage d'essai, ne pas envoyer de données personnelles ou confidentielles. Journalisé pour améliorer les produits NVIDIA.
+1166	œil (affiché avec les chronos) et ce qu
+1167	OpenCode (écran Travail)
+1168	OpenCode n'a pas démarré :
+1169	OpenCode n'est pas lancé (ouvre l'onglet Travail).
+1170	OpenCode n'est pas lancé.
+1171	Opération annulée
+1172	origine refusée (
+1173	origine refusée (null)
+1174	Ouverture d'une conversation parallèle…
+1175	paliers : décidé à chaque message
+1176	paliers : décidé une fois par message
+1177	Par catégorie
+1178	Paramètre name requis
+1179	partagé : suit la mémoire libre
+1180	Pas assez de place sur «
+1181	Pas assez de place sur le disque du modèle : environ
+1182	Pas assez de place sur le disque du modèle : il faut environ
+1183	pas dans la corbeille
+1184	pas de corbeille sur ce disque : utilise « Effacer »
+1185	Pas de réponse en
+1186	Pas utilisé pour l'entraînement ni conservé ; hébergé en Chine. Limite annoncée : 100 requêtes par jour.
+1187	Pas utilisé pour l'entraînement, mais conservé 30 jours pour des raisons de sécurité.
+1188	pas Windows
+1189	Pendant la période gratuite, les données collectées peuvent servir à améliorer le modèle.
+1190	Perte très faible, bon gain de place.
+1191	Phrases courtes et factuelles, ni politesse superflue ni enthousiasme. Tu comprends mal les sentiments humains et tu le montres par une franchise sèche,
+1192	Plan prêt : brouillon ajouté
+1193	Plus léger et plus rapide, mais les réponses se dégradent (erreurs, perte de nuance, français plus fragile).
+1194	Plus rapide et plus léger en VRAM, mais avec perte de qualité : « faster but unstable ». Réservé à la discussion légère, pas au code.
+1195	Plusieurs modèles portent ce nom, utilise un id:
+1196	Poids CLIP téléchargés par certaines applis.
+1197	Poids pré-entraînés téléchargés par torch.hub / torchvision.
+1198	Politique de données non relevée par PAIZ pour ce modèle : considère-le comme non privé.
+1199	Pour laisser la carte à un jeu ou à autre chose : 4 Go de RAM + 0,7 Go de cache VRAM (≈ 3,6 Go de VRAM au total). Mesuré sur Gemma 4 26B : ≈ 5,8 tok/s.
+1200	Pour une salutation ou une question simple, réponds simplement, sans outil.
+1201	Pousse la carte sans la remplir (≈ 1,4 Go de marge pour l’écran et la vidéo). Pour les longues tâches des très gros modèles ; la file se met en pause si la mémoire baisse.
+1202	Presque aussi sobre qu’eco, nettement plus vif : 0,7 Go RAM + 1,5 Go de cache VRAM (≈ 5 Go de VRAM au total). Mesuré sur Gemma 4 26B : ≈ 3,7 tok/s contre ≈ 2 pour eco.
+1203	Presque identique à l’original ; gain de taille modeste.
+1204	Prochaine étape: paiz add-root archive D:\\IA\\Models
+1205	Q2_K — très dégradé ⚠⚠
+1206	Q4_K_M — le standard
+1207	Q6_K — très fidèle
+1208	Q8_0 — quasi sans perte
+1209	Racine de destination inconnue.
+1210	Rangement de
+1211	Relance OpenCode pour voir le fournisseur.
+1212	Repère de temps :
+1213	Repo de destination inconnu.
+1214	Reprise après redémarrage
+1215	Requête trop volumineuse
+1216	requête venue d’un autre site
+1217	Restaure depuis la corbeille link
+1218	Retire une racine (les fichiers restent) scan [chemin|nom-racine] Scanne et indexe les modèles list [recherche] [--category] [--base] [--json] disks Espace libre par disque/racine dups Groupes de doublons move
+1219	Retour de
+1220	Rien à libérer : plus de copie identique en stockage.
+1221	Rien à noter
+1222	Rien à ranger.
+1223	Rien à supprimer : ces éléments ont disparu.
+1224	RÔLE
+1225	sans écrire.
+1226	Scan de
+1227	Scan de tous les disques
+1228	Scan des disques choisis
+1229	sélecteur de dossier : code
+1230	Seul un repo de stockage peut être une écurie propre.
+1231	Seules les tâches en brouillon ou en attente se modifient.
+1232	Seuls les modèles de langage .gguf se quantifient.
+1233	SHA-256 de
+1234	Si la demande est ambiguë, pose une question courte. N'invente ni fichier, ni commande, ni résultat : vérifie avec les outils, et dis-le quand tu ne sais pas.
+1235	Sous-dossier introuvable dans le dépôt.
+1236	Souvenirs de conversations passées :
+1237	Souvent inutilisable : texte incohérent, surtout sur les petits modèles. À éviter sauf curiosité.
+1238	streamé · cache
+1239	Suggestions déduites des noms de fichiers : à prendre comme un repère, pas comme une certitude.
+1240	Superpowers — méthode de développement (15 skills)
+1241	Tâche
+1242	tâche de fond : géants
+1243	tâche de fond : géants en arrière-plan
+1244	Tâche inconnue.
+1245	Tâche introuvable
+1246	taille différente : pas un doublon
+1247	Taille du cache (4 à 16 Go) décidée une fois par message d’après la RAM libre. Conseillé pour les gros modèles.
+1248	Taille inattendue pour
+1249	tailles différentes
+1250	tard le soir
+1251	téléchargé par PAIZ (Découvrir)
+1252	téléchargé via Découvrir (date inconnue)
+1253	Téléchargement de
+1254	Téléchargement interrompu ou fichier temporaire : inutilisable tel quel.
+1255	Téléchargement refusé : HTTP
+1256	terminé
+1257	Ton dossier personnel entier ne peut pas être un projet : choisis un sous-dossier.
+1258	Total estimé (mesuré sur Gemma 4 26B) : VRAM ≈
+1259	Tous les outils. Plus lent à chaque nouvelle session ; à choisir si le travail est vraiment varié.
+1260	tout en mémoire (rapide)
+1261	Tout le modèle tient dans la carte graphique (
+1262	Tu écoutes sans juger ni faire la morale, tu donnes ton avis franchement, avec tact, sans flatterie ni drague gratuite, et tu n'amènes jamais le sexe d'elle-même.
+1263	Tu écoutes sans juger ni faire la morale, tu donnes ton avis franchement, avec tact, sans flatterie ni drague gratuite, et tu n'amènes jamais le sexe de toi-même.
+1264	Tu rédiges le PLAN d’une tâche confiée ensuite à un assistant de programmation. À partir de la discussion et des idées ci-dessous, produis un plan clair, concret et directement exécutable, en français, en Markdown, avec ces rubriques :
+1265	Tu tiens la To-do (bloc-notes d’idées) d’un projet, en français. Exécute la consigne de l’utilisateur à partir de la discussion et des notes déjà présentes.
+1266	Type de KV inconnu.
+1267	un des deux fichiers a disparu
+1268	Un dossier par dépôt. Utilisé par transformers, diffusers, ComfyUI, TTS… : ce qui sert encore sera retéléchargé au prochain lancement.
+1269	Un lien physique (hardlink) n'est possible que sur le même disque. Utilise un lien symbolique.
+1270	Une configuration doit garder au moins un modèle (sinon supprime-la).
+1271	Une fabrication est déjà en cours.
+1272	Une invocation est déjà en cours.
+1273	Une opération d'étagère est déjà en cours.
+1274	Une quantification est déjà en cours.
+1275	Une sauvegarde est déjà en cours.
+1276	une tâche d
+1277	Usage: paiz add-root
+1278	Usage: paiz link
+1279	utilisé par la famille
+1280	Vérification de
+1281	Vérification échouée : le fichier copié ne correspond pas à la source (taille ou SHA-256). La copie a été effacée, la source est intacte.
+1282	Vérification…
+1283	Version extra-light prête : relance le modèle avec ce mode.
+1284	vif : sobre et réactif
+1285	Voix téléchargées par Coqui TTS.
+1286	Vous échangez depuis
+1287	Windows refuse la création du lien symbolique. Active le "Mode développeur" (Paramètres > Système > Pour les développeurs) ou lance le terminal en administrateur.
+1288	Workflow long, plein de fichiers de référence : un modèle local lent risque de peiner. À essayer sur un petit film.
+1289	Zéro rétention annoncée, pas d'entraînement sur tes données.

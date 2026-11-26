@@ -1,0 +1,310 @@
+980	Move
+981	Moving
+982	Repository not found (or private).
+983	last model not found
+984	Blender 5.x workflows ready for an agent: modelling, UV, PBR materials, baking, rigging, animation, geometry nodes, export (Unity, Unreal, Godot…), quality control. Each skill comes with tested scripts. MIT licence.
+985	destination already taken
+986	Imperceptible difference in practice.
+987	differs from the one published by Hugging Face: file deleted, start the download again.
+988	Say what you want to note.
+989	DISK
+990	disk without a Windows trash
+991	Give the profile a name.
+992	Give the server a name.
+993	Data:
+994	Data kept and used to improve the model.
+995	Data kept, possibly used for training and monitoring.
+996	Data possibly used to improve the model; kept for 30 days.
+997	Program folder missing:
+998	Folder not found:
+999	Folder not found.
+1000	Source folder missing.
+1001	failed:
+1002	erased
+1003	item
+1004	unknown location or already present
+1005	Waiting: no local model loaded
+1006	Waiting: the chat model is finishing loading
+1007	Waiting: not enough memory to start
+1008	engine-aux
+1009	Unknown shelf entry.
+1010	Chinese equivalent of Hugging Face.
+1011	access error(s)
+1012	Uncorrected errors:
+1013	Not enough space on
+1014	Reclaimable space:
+1015	Test not available for a remote server.
+1016	stopped (code
+1017	is only counted
+1018	is only read
+1019	STATE
+1020	Windows status:
+1021	turned off automatically
+1022	turned off by you
+1023	run: an old run finishing
+1024	already exists and is not a link:
+1025	Experts computed by the processor, no VRAM cache. If the graphics card is busy.
+1026	Excerpts found:
+1027	file
+1028	missing file
+1029	Missing file:
+1030	File missing from disk:
+1031	Missing file.
+1032	Model file missing.
+1033	File not found:
+1034	File not found.
+1035	file(s) already stored
+1036	file(s) found
+1037	LM Studio application files (runtimes, extensions): no models here, but emptying them breaks the app until it is reinstalled.
+1038	forced: .mdisp-trash folder
+1039	MXFP4 format: not to be quantised again.
+1040	Download fragments deduplicated.
+1041	merged
+1042	GB free required.
+1043	GB required. Nothing was downloaded: make room or choose another destination.
+1044	GB on
+1045	GB): maximum speed, WeightStream has nothing to stream.
+1046	h of operation (ageing disk)
+1047	-
+1048	host refused (
+1049	Unknown idea.
+1050	Empty idea.
+1051	Invalid model identifier.
+1052	Identical to
+1053	At least two copies are needed.
+1054	Requires Blender 5.2 or later installed. All 28 install disabled: only enable blender-core (the entry point) and the ones you need, because each active skill adds its name and description to the prompt of every message.
+1055	He comes back after
+1056	Cannot create
+1057	Cannot find a free name for
+1058	unchanged,
+1059	Enter the command to run.
+1060	-
+1061	Interpreter not found (
+1062	not found in the index.
+1063	-
+1064	Just chat: no tools. The shortest possible prompt, the fastest answer.
+1065	the old place is taken
+1066	in the afternoon
+1067	The eye answered HTTP
+1068	PAIZ's eye is turned off (👁 button at the top of the chat)
+1069	The eye did not start.
+1070	The eye did not answer in time.
+1071	-
+1072	The destination cannot be inside the source.
+1073	RAM does the work, the graphics card keeps only a 0.7 GB cache: 8 GB of RAM + 0.7 GB of VRAM (≈ 4.4 GB of VRAM in total). Measured on Gemma 4 26B: ≈ 9 tok/s. Leaves little RAM to the machine (≈ 2 GB).
+1074	RAM does the work, the graphics card stays almost free (for a game, for example).
+1075	Source and destination are the same.
+1076	The extra-light version already exists.
+1077	The path already exists:
+1078	The usual choice: good size / quality balance.
+1079	The folder doesn't exist:
+1080	The file already exists:
+1081	the file is no longer there
+1082	in the morning
+1083	The minimum of memory (0.7 GB RAM, 0.5 GB VRAM). The slowest, machine left free.
+1084	the model
+1085	The model writes a film (script, images rendered in Chrome, generated sound) and produces an MP4. MIT licence.
+1086	The model is already in this repo.
+1087	The model is already in this root.
+1088	The engine refused to resume (
+1089	The engine refused the speed:
+1090	The engine didn't keep the interrupted work (engine without exact resume, or data folder changed).
+1091	The engine only reads .gguf files.
+1092	The engine follows the machine's free memory while it works. More careful than fast: for big models and background work.
+1093	The WeightStream engine doesn't answer on port
+1094	The name suggests an old backup or cache copy.
+1095	Anthropic's open-source pack (Word/PDF/PowerPoint/Excel documents, design, skill creation…). Everything installs disabled: enable the ones you need.
+1096	The leanest for chatting: 0.7 GB RAM + 4 GB VRAM cache (≈ 7.4 GB VRAM in total). Measured on Gemma 4 26B: ≈ 13 tok/s.
+1097	The second engine stopped while starting.
+1098	The folder picker is only available on Windows.
+1099	in the evening
+1100	Léa (friend)
+1101	light: a better eco
+1102	Léo (friend)
+1103	the two copies are NOT identical: nothing was touched
+1104	The experts fit entirely in the caches:
+1105	The tools the conversation asks for (keywords: git, web, agents…). The original behaviour.
+1106	The non-expert weights don't fit in RAM once the safety margin is reserved.
+1107	Free up
+1108	Licences vary by skill (some are “source available”, not free): check each folder's LICENSE.
+1109	link not created (
+1110	Read, edit and search files, terminal and task list. No web, no sub-agents.
+1111	llama-quantize failed (code
+1112	My collection
+1113	Even when streaming the experts, the non-expert weights (~
+1114	Memory:
+1115	Memory: variable, computed from the RAM and VRAM free at load time.
+1116	low memory (RAM
+1117	not enough free memory
+1118	-
+1119	updated,
+1120	Model #
+1121	Restricted-access model (Hugging Face account required).
+1122	Vision model missing:
+1123	Dense model: WeightStream only streams the experts of MoE models. It will run with regular llama.cpp, split between the card and RAM, so rather slowly.
+1124	Dense model bigger than the usable RAM + VRAM: expert streaming doesn't apply to it. It would have to be read continuously from the SSD (extremely slow).
+1125	Model unknown to the catalogue.
+1126	Unknown model.
+1127	Model not found
+1128	Model not found:
+1129	Model not found.
+1130	Invalid model.
+1131	Local model (name not recorded)
+1132	Model not allowed: only the local model and OpenCode's free models are offered.
+1133	Model ready.
+1134	Model stored.
+1135	Model restored to its original location.
+1136	Model restored in
+1137	model too big
+1138	model(s) —
+1139	model(s) →
+1140	model(s),
+1141	MODELS
+1142	models —
+1143	GPT4All models.
+1144	Jan models.
+1145	Transcription models.
+1146	Models pulled with the -hf option.
+1147	image module of this model
+1148	Engine
+1149	search engine blocked
+1150	engine already running
+1151	engine-task
+1152	keywords
+1153	-
+1154	-
+1155	-
+1156	required (margin included). Free some space or choose another location: nothing was moved.
+1157	required (margin included). Nothing was moved.
+1158	Unknown original quantisation level: nothing is offered, to avoid a bad surprise.
+1159	Root name required
+1160	Name and path required
+1161	Unmanaged:
+1162	not offered for this model.
+1163	normal: balanced
+1164	New location of the LM Studio library.
+1165	NVIDIA: trial use, don't send personal or confidential data. Logged to improve NVIDIA products.
+1166	-
+1167	OpenCode (Work screen)
+1168	OpenCode did not start:
+1169	OpenCode is not running (open the Work tab).
+1170	OpenCode is not running.
+1171	Operation cancelled
+1172	origin refused (
+1173	origin refused (null)
+1174	Opening a parallel conversation…
+1175	steps: decided at each message
+1176	steps: decided once per message
+1177	By category
+1178	name parameter required
+1179	shared: follows free memory
+1180	Not enough space on “
+1181	Not enough space on the model's disk: about
+1182	Not enough space on the model's disk: you need about
+1183	not in the trash
+1184	no trash on this disk: use “Erase”
+1185	No answer in
+1186	Not used for training nor kept; hosted in China. Announced limit: 100 requests per day.
+1187	Not used for training, but kept for 30 days for security reasons.
+1188	not Windows
+1189	During the free period, collected data may be used to improve the model.
+1190	Very small loss, good space saving.
+1191	-
+1192	Plan ready: draft added
+1193	Lighter and faster, but answers degrade (mistakes, loss of nuance, more fragile French).
+1194	Faster and lighter in VRAM, but with quality loss: “faster but unstable”. For light chat only, not for code.
+1195	Several models have this name, use an id:
+1196	CLIP weights downloaded by some apps.
+1197	Pre-trained weights downloaded by torch.hub / torchvision.
+1198	Data policy not recorded by PAIZ for this model: treat it as not private.
+1199	To leave the card to a game or something else: 4 GB of RAM + 0.7 GB of VRAM cache (≈ 3.6 GB of VRAM in total). Measured on Gemma 4 26B: ≈ 5.8 tok/s.
+1200	-
+1201	Pushes the card without filling it (≈ 1.4 GB left for the screen and video). For long tasks of very big models; the queue pauses if memory runs low.
+1202	Almost as lean as eco, much livelier: 0.7 GB RAM + 1.5 GB VRAM cache (≈ 5 GB VRAM in total). Measured on Gemma 4 26B: ≈ 3.7 tok/s against ≈ 2 for eco.
+1203	Almost identical to the original; modest size saving.
+1204	-
+1205	Q2_K — badly degraded ⚠⚠
+1206	Q4_K_M — the standard
+1207	Q6_K — very faithful
+1208	Q8_0 — almost lossless
+1209	Unknown destination root.
+1210	Tidying
+1211	Restart OpenCode to see the provider.
+1212	-
+1213	Unknown destination repo.
+1214	Resuming after a restart
+1215	Request too large
+1216	request coming from another site
+1217	-
+1218	-
+1219	Back from
+1220	Nothing to free: no identical copy in storage any more.
+1221	Nothing to note
+1222	Nothing to tidy.
+1223	Nothing to delete: these items are gone.
+1224	ROLE
+1225	-
+1226	Scanning
+1227	Scanning all disks
+1228	Scanning the chosen disks
+1229	folder picker: code
+1230	Only a storage repo can be a clean stable.
+1231	Only draft or waiting tasks can be edited.
+1232	Only .gguf language models can be quantised.
+1233	SHA-256 of
+1234	-
+1235	Subfolder not found in the repository.
+1236	-
+1237	Often unusable: incoherent text, especially on small models. Avoid unless curious.
+1238	streamed · cache
+1239	Suggestions deduced from file names: take them as a hint, not a certainty.
+1240	Superpowers — development method (15 skills)
+1241	Task
+1242	background task: giants
+1243	background task: giants in the background
+1244	Unknown task.
+1245	Task not found
+1246	different size: not a duplicate
+1247	Cache size (4 to 16 GB) decided once per message from free RAM. Recommended for big models.
+1248	Unexpected size for
+1249	different sizes
+1250	late in the evening
+1251	downloaded by PAIZ (Discover)
+1252	downloaded via Discover (date unknown)
+1253	Downloading
+1254	Interrupted download or temporary file: unusable as is.
+1255	Download refused: HTTP
+1256	done
+1257	Your whole home folder cannot be a project: choose a subfolder.
+1258	Estimated total (measured on Gemma 4 26B): VRAM ≈
+1259	All tools. Slower at each new session; pick it if the work really is varied.
+1260	everything in memory (fast)
+1261	The whole model fits in the graphics card (
+1262	-
+1263	-
+1264	-
+1265	-
+1266	Unknown KV type.
+1267	one of the two files has disappeared
+1268	One folder per repository. Used by transformers, diffusers, ComfyUI, TTS…: whatever is still used will be downloaded again on next launch.
+1269	A hard link is only possible on the same disk. Use a symbolic link.
+1270	A configuration must keep at least one model (otherwise delete it).
+1271	A build is already in progress.
+1272	A summon is already in progress.
+1273	A shelf operation is already in progress.
+1274	A quantisation is already in progress.
+1275	A backup is already in progress.
+1276	a task
+1277	-
+1278	-
+1279	used by the family
+1280	Checking
+1281	Check failed: the copied file doesn't match the source (size or SHA-256). The copy was erased, the source is intact.
+1282	Checking…
+1283	Extra-light version ready: relaunch the model with this mode.
+1284	vif: lean and responsive
+1285	Voices downloaded by Coqui TTS.
+1286	-
+1287	Windows refuses to create the symbolic link. Enable “Developer mode” (Settings > System > For developers) or run the terminal as administrator.
+1288	Long workflow, full of reference files: a slow local model may struggle. Try it on a short film.
+1289	Zero retention announced, no training on your data.

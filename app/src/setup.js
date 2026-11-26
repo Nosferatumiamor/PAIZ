@@ -14,9 +14,9 @@ import { listLocalVolumes } from './volumes.js';
 
 // Modèles proposés à l'installation (fichiers vérifiés sur Hugging Face le 2026-11-25).
 export const STARTER_MODELS = [
-  { key: 'gemma', id: 'unsloth/gemma-4-26B-A4B-it-GGUF', file: 'gemma-4-26B-A4B-it-UD-Q4_K_M.gguf', size: 16.95e9, recommended: true,
+  { key: 'gemma', id: 'unsloth/gemma-4-26B-A4B-it-GGUF', file: 'gemma-4-26B-A4B-it-UD-Q4_K_M.gguf', size: 16947541728, recommended: true,
     label: 'Gemma 4 26B-A4B (Q4_K_M)', note: 'Premier modèle conseillé : discussion, écriture, code léger. Tourne dès ~4 Go de VRAM.' },
-  { key: 'qwen', id: 'unsloth/Qwen3-Coder-Next-GGUF', file: 'Qwen3-Coder-Next-Q4_K_M.gguf', size: 48.53e9, recommended: false,
+  { key: 'qwen', id: 'unsloth/Qwen3-Coder-Next-GGUF', file: 'Qwen3-Coder-Next-Q4_K_M.gguf', size: 48528320544, recommended: false,
     label: 'Qwen3-Coder-Next (Q4_K_M)', note: 'Gros modèle de code pour les tâches de fond. Lent (≈ 5 jetons/s avec 12 Go de VRAM et 32 Go de RAM) ; 32 Go de RAM conseillés.' },
 ];
 const OPENCODE_URL = 'https://opencode.ai/update/api/latest/desktop/opencode/opencode-desktop-win-x64.exe';

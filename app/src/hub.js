@@ -129,10 +129,17 @@ export function startDownload(db, { id, files, toRoot, toDir, folder }) {
       job.progress.current = f.name;
       const url = `${HF}/${id}/resolve/main/${f.path.split('/').map(encodeURIComponent).join('/')}`;
       const res = await fetch(url, { headers: { ...UA, ...(f.have ? { Range: `bytes=${f.have}-` } : {}) }, redirect: 'follow' });
-      if (!(res.status === 200 || res.status === 206)) throw new Error(`Téléchargement refusé : HTTP ${res.status}`);
+      if (res.status === 416 && f.have) { // « plage non satisfaisable » : si le partiel a déjà la taille complète annoncée, il est fini
+        const m = /\/(\d+)\s*$/.exec(res.headers.get('content-range') || '');
+        if (m && Number(m[1]) === f.have) { f.expected = f.have; await res.body?.cancel?.().catch(() => {}); } else throw new Error('Téléchargement refusé : HTTP 416');
+      } else if (!(res.status === 200 || res.status === 206)) throw new Error(`Téléchargement refusé : HTTP ${res.status}`);
       if (res.status === 200 && f.have) { done -= f.have; f.have = 0; } // le serveur ne reprend pas : on repart de zéro pour ce fichier
+      if (res.status !== 416) { // taille attendue = celle annoncée par le serveur (celle de l'appelant peut être approximative)
+        const len = Number(res.headers.get('content-length')) || 0;
+        if (len) f.expected = res.status === 206 ? f.have + len : len;
+      }
       const ws = fs.createWriteStream(f.part, { flags: res.status === 206 ? 'a' : 'w' });
-      const src = Readable.fromWeb(res.body);
+      const src = res.status === 416 ? Readable.from([]) : Readable.fromWeb(res.body);
       src.on('data', (c) => {
         done += c.length;
         job.progress.bytes = done;
@@ -140,7 +147,8 @@ export function startDownload(db, { id, files, toRoot, toDir, folder }) {
       });
       await pipeline(src, ws); // annulation ou erreur : les .part sont gardés pour reprendre
       const st = await fsp.stat(f.part);
-      if (f.size && st.size !== f.size) throw new Error(`Taille inattendue pour ${f.name} (${st.size} au lieu de ${f.size}) : partiel gardé pour reprise.`);
+      const want = f.expected || f.size;
+      if (want && st.size !== want) throw new Error(`Taille inattendue pour ${f.name} (${st.size} au lieu de ${want}) : partiel gardé pour reprise.`);
       if (f.sha256) {
         job.progress.phase = 'verify';
         const base = job.progress.bytes;
